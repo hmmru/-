@@ -7,94 +7,132 @@
     <style>
         body { margin: 0; display: flex; height: 100vh; background: #000; color: #eee; font-family: sans-serif; overflow: hidden; }
         .editor { width: 400px; background: #111; border-right: 1px solid #333; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .editor h2 { font-size: 13px; color: #3b82f6; letter-spacing: 2px; margin: 0; padding-bottom: 10px; border-bottom: 1px solid #333; }
         .field { display: flex; flex-direction: column; gap: 4px; }
         .field label { font-size: 10px; font-weight: bold; color: #3b82f6; }
         .field input, .field textarea { background: #050505; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 4px; font-size: 12px; outline: none; }
-        .field textarea { height: 100px; resize: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; background: #3b82f6; color: #fff; margin-top: 10px; }
-        .preview { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; background: #080808; }
+        .field textarea { height: 60px; resize: none; line-height: 1.5; }
+        .btn-group { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .btn-dark { background: #222; color: #ccc; }
+        .preview { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; background: #080808; }
     </style>
 </head>
 <body>
 
 <div class="editor">
-    <h2 style="font-size: 13px; color: #3b82f6;">FGD EDITOR</h2>
-    <div class="field"><label>로고 이미지 URL</label><input type="text" id="imgUrl" value="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2F4EqNB%2FdJMcahYuluP%2FAAAAAAAAAAAAAAAAAAAAAPnbjATaPuvdc7dnnFh9UyESa_7w2An_O2CjMlCy_GuJ%2Fimg.png" oninput="apply()"></div>
-    <div class="field"><label>내용 편집</label><textarea id="mainHtml" oninput="apply()">[위에 네가 준 HTML 내용이 들어감]</textarea></div>
-    <button class="btn" onclick="download()">고화질 PNG 저장</button>
+    <h2>FGD CONTROL SYSTEM</h2>
+    <div class="field"><label>테마 컬러</label><input type="color" id="colorInput" value="#3b82f6" oninput="apply()"></div>
+    <div class="field"><label>로고 이미지 업로드</label><input type="file" id="fileInput" accept="image/*" onchange="loadFile(event)"></div>
+    <div class="field"><label>상단 태그</label><input type="text" id="tagInput" value="Fearless Global Division :: FGD" oninput="apply()"></div>
+    <div class="field"><label>지부 타이틀</label><input type="text" id="branchTitleInput" value="한국 지부 [Fearless]" oninput="apply()"></div>
+    <div class="field"><label>지부 상세 문구</label><textarea id="branchInput" oninput="apply()">"뼈를 삼키고, 살을 불태우며, 숨을 이어. 너에게 내일을 약속하지. 이건 너희들에게 속삭이는 모두의 이야기."</textarea></div>
+    
+    <div class="btn-group">
+        <button class="btn btn-blue" onclick="download()">고화질 PNG 저장</button>
+        <button class="btn btn-dark" onclick="copy()">최종 코드 복사</button>
+        <button class="btn btn-dark" onclick="toggleWhite()">화이트/다크 모드 전환</button>
+    </div>
 </div>
 
 <div class="preview">
-    <div id="ORIGINAL_FRAME" style="margin: 0 auto; width: 480px; font-family: 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif; background: #020617; background-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.8) 150px, transparent 250px), linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px), radial-gradient(circle at 50% 100%, #1e3a8a 0%, #020617 85%); background-size: 100% 100%, 25px 25px, 25px 25px, 100% 100%; border: 1px solid #1e293b; border-top: 3px solid #3b82f6; border-radius: 20px; padding: 60px 25px; color: #94a3b8; box-sizing: border-box; position: relative; overflow: hidden;">
+    <div id="ORIGINAL_FRAME" style="margin: 0 auto; width: 480px; font-family: 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif; background: #020617; background-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.8) 150px, transparent 250px), linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px), radial-gradient(circle at 50% 100%, #1e3a8a 0%, #020617 85%); background-size: 100% 100%, 25px 25px, 25px 25px, 100% 100%; border: 1px solid #1e293b; border-top: 3px solid #3b82f6; border-radius: 20px; padding: 60px 25px; color: #94a3b8; box-sizing: border-box; position: relative; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.9);">
         
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.6;">
-            <div style="position: absolute; top: 25px; left: 25px; width: 15px; height: 15px; border-top: 2px solid #3b82f6; border-left: 2px solid #3b82f6;"></div>
-            <div style="position: absolute; top: 25px; right: 25px; width: 15px; height: 15px; border-top: 2px solid #3b82f6; border-right: 2px solid #3b82f6;"></div>
-            <div style="position: absolute; bottom: 25px; left: 25px; width: 15px; height: 15px; border-bottom: 2px solid #3b82f6; border-left: 2px solid #3b82f6;"></div>
-            <div style="position: absolute; bottom: 25px; right: 25px; width: 15px; height: 15px; border-bottom: 2px solid #3b82f6; border-right: 2px solid #3b82f6;"></div>
+            <div class="t-border" style="position: absolute; top: 25px; left: 25px; width: 15px; height: 15px; border-top: 2px solid #3b82f6; border-left: 2px solid #3b82f6;"></div>
+            <div class="t-border" style="position: absolute; top: 25px; right: 25px; width: 15px; height: 15px; border-top: 2px solid #3b82f6; border-right: 2px solid #3b82f6;"></div>
+            <div class="t-border" style="position: absolute; bottom: 25px; left: 25px; width: 15px; height: 15px; border-bottom: 2px solid #3b82f6; border-left: 2px solid #3b82f6;"></div>
+            <div class="t-border" style="position: absolute; bottom: 25px; right: 25px; width: 15px; height: 15px; border-bottom: 2px solid #3b82f6; border-right: 2px solid #3b82f6;"></div>
         </div>
 
         <div style="position: relative; z-index: 2;">
             <div style="text-align: center; margin-bottom: 50px;">
-                <div style="font-size: 10px; color: #3b82f6; letter-spacing: 5px; font-weight: bold; margin-bottom: 20px; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);">Fearless Global Division :: FGD</div>
-                <div style="margin: 0 auto; width: 100%;"><img id="previewImg" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2F4EqNB%2FdJMcahYuluP%2FAAAAAAAAAAAAAAAAAAAAAPnbjATaPuvdc7dnnFh9UyESa_7w2An_O2CjMlCy_GuJ%2Fimg.png" style="max-width:100%;"></div>
-                <div style="width: 40px; height: 1px; background: #2563eb; margin: 30px auto; opacity: 0.6;"></div>
+                <div id="outTag" class="t-text" style="font-size: 10px; color: #3b82f6; letter-spacing: 5px; font-weight: bold; margin-bottom: 20px; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);">Fearless Global Division :: FGD</div>
+                <div style="margin: 0 auto; width: 100%;"><img id="outImg" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2F4EqNB%2FdJMcahYuluP%2FAAAAAAAAAAAAAAAAAAAAAPnbjATaPuvdc7dnnFh9UyESa_7w2An_O2CjMlCy_GuJ%2Fimg.png" style="max-width:100%;"></div>
+                <div class="t-line" style="width: 40px; height: 1px; background: #2563eb; margin: 30px auto; opacity: 0.6;"></div>
             </div>
 
             <div style="margin-bottom: 45px;">
-                <div style="font-weight: bold; color: #f8fafc; font-size: 17px; margin-bottom: 15px; display: flex; align-items: center;"><span style="color: #3b82f6; margin-right: 12px; font-size: 18px;">◈</span>세계관</div>
-                <div style="font-size: 14px; text-align: justify; color: #cbd5e1; line-height: 1.8; border-left: 2px solid #3b82f6; padding: 10px 18px; background: rgba(30, 58, 138, 0.05);">2XX4년 04월 15일. 거대 게이트 최초 출현. 사망자 17,428명, 부상자 63,917명, 실종자: 3,206명. 이후, 대한민국은 완전히 뒤바뀌었다.</div>
+                <div class="t-header-text" style="font-weight: bold; color: #f8fafc; font-size: 17px; margin-bottom: 15px; display: flex; align-items: center;"><span class="t-text" style="color: #3b82f6; margin-right: 12px; font-size: 18px;">◈</span>세계관</div>
+                <div class="t-sub-box" style="font-size: 14px; text-align: justify; color: #cbd5e1; line-height: 1.8; border-left: 2px solid #3b82f6; padding: 10px 18px; background: rgba(30, 58, 138, 0.05);">2XX4년 04월 15일. 거대 게이트 최초 출현. 사망자 17,428명, 부상자 63,917명, 실종자: 3,206명. 이후, 대한민국은 완전히 뒤바뀌었다.</div>
             </div>
 
-            <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 15px; padding: 30px 18px 0px 18px; backdrop-filter: blur(10px); overflow: hidden;">
-                <div style="margin-bottom: 35px; padding-bottom: 1px;">
+            <div id="mainContentBox" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 15px; padding: 30px 18px 0 18px; backdrop-filter: blur(10px); overflow: hidden;">
+                <div style="margin-bottom: 35px;">
                     <div style="padding: 0 5px; margin-bottom: 12px; border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding-bottom: 8px;">
-                        <div style="font-size: 14px; color: #ffffff; font-weight: bold;">한국 지부 <span style="color: #3b82f6;">[Fearless]</span></div>
+                        <div id="outBranchTitle" class="t-header-text" style="font-size: 14px; color: #ffffff; font-weight: bold; text-align: left;">한국 지부 <span class="t-text" style="color: #3b82f6;">[Fearless]</span></div>
                     </div>
-                    <div style="padding-left: 5px; font-size: 13.5px; color: #94a3b8; line-height: 1.7;">"<b>뼈를 삼키고, 살을 불태우며, 숨을 이어. 너에게 내일을 약속하지.</b><br><b>이건 너희들에게 속삭이는 모두의 이야기."</b></div>
+                    <div id="outBranch" class="t-content-text" style="padding-left: 5px; font-size: 13.5px; color: #94a3b8; line-height: 1.7; text-align: left;">"<b>뼈를 삼키고, 살을 불태우며, 숨을 이어. 너에게 내일을 약속하지.</b><br><b>이건 너희들에게 속삭이는 모두의 이야기."</b></div>
                 </div>
 
-                <div style="background: rgba(30, 58, 138, 0.1); border: 1px dashed #3b82f6; padding: 18px; border-radius: 12px; margin-bottom: 15px;">
-                    <div style="font-size: 14px; color: #3b82f6; font-weight: bold; margin-bottom: 10px;">[센티넬]</div>
-                    <div style="font-size: 12.5px; color: #cbd5e1; line-height: 1.7;">초능력자. 각성해 능력을 얻게 되며 신체 능력이 일반인보다 월등히 뛰어나다. 약물을 통해 부작용을 통제하지만 가이드에게 가이딩을 받아야 한다.</div>
-                </div>
-
-                <div style="background: rgba(30, 58, 138, 0.1); border: 1px dashed #3b82f6; padding: 18px; border-radius: 12px; margin-bottom: 30px;">
-                    <div style="font-size: 14px; color: #3b82f6; font-weight: bold; margin-bottom: 10px;">[가이드]</div>
-                    <div style="font-size: 12.5px; color: #cbd5e1; line-height: 1.7;">센티넬의 안정과 치유를 담당하며 폭주을 막을 수 있는 유일한 사람들.</div>
-                </div>
-
-                <div id="pairing_section" style="background: #020617; border-top: 1px solid rgba(59, 130, 246, 0.3); padding: 25px 22px; text-align: center; margin: 0 -18px;">
-                    <div style="font-size: 10px; color: #3b82f6; letter-spacing: 4px; margin-bottom: 10px; font-weight: bold;">PAIRING ANALYSIS</div>
-                    <div style="font-size: 15px; color: #ffffff; font-weight: bold; margin-bottom: 8px;">[페어링 시스템]</div>
-                    <div style="font-size: 13.5px; color: #94a3b8; line-height: 1.6;"><b>[센티넬&가이드]</b>가 기본이지만,<br><span style="color: #3b82f6; font-weight: bold;">[센티넬&센티넬]</span> 페어도 존재한다.</div>
+                <div id="pairingBox" class="t-border" style="background: #020617; border-top: 1px solid rgba(59, 130, 246, 0.3); padding: 22px; text-align: center; margin: 0 -18px;">
+                    <div class="t-text" style="font-size: 10px; color: #3b82f6; letter-spacing: 4px; margin-bottom: 10px; font-weight: bold;">PAIRING ANALYSIS</div>
+                    <div class="t-header-text" style="font-size: 15px; color: #ffffff; font-weight: bold; margin-bottom: 8px;">[페어링 시스템]</div>
+                    <div class="t-content-text" style="font-size: 13.5px; color: #94a3b8; line-height: 1.6;"><b>[센티넬&가이드]</b>가 기본이지만,<br><span class="t-text" style="color: #3b82f6; font-weight: bold;">[센티넬&센티넬]</span> 페어도 존재한다.</div>
                 </div>
             </div>
 
             <div style="margin-top: 40px; text-align: center; opacity: 0.4;">
-                <div style="font-size: 8px; color: #3b82f6; letter-spacing: 2px;">FEARLESS ACCESS // DATA_REF_KR_2026</div>
+                <div class="t-text" style="font-size: 8px; color: #3b82f6; letter-spacing: 2px;">FEARLESS ACCESS // DATA_REF_KR_2026</div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    let isWhite = false;
+    function loadFile(e) {
+        const r = new FileReader();
+        r.onload = () => document.getElementById('outImg').src = r.result;
+        r.readAsDataURL(e.target.files[0]);
+    }
     function apply() {
-        document.getElementById('previewImg').src = document.getElementById('imgUrl').value;
-    }
-    function download() {
-        const frame = document.getElementById('ORIGINAL_FRAME');
-        html2canvas(frame, {
-            scale: 3,
-            useCORS: true,
-            backgroundColor: "#020617" // 출력 시 배경색 고정해서 빈틈 방지
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'FGD_INTERFACE.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+        const c = document.getElementById('colorInput').value;
+        const f = document.getElementById('ORIGINAL_FRAME');
+        f.style.borderTopColor = c;
+        document.getElementById('outTag').innerText = document.getElementById('tagInput').value;
+        document.getElementById('outBranch').innerHTML = document.getElementById('branchInput').value.replace(/\n/g, '<br>');
+        
+        document.querySelectorAll('.t-text').forEach(el => el.style.color = c);
+        document.querySelectorAll('.t-line').forEach(el => el.style.backgroundColor = c);
+        document.querySelectorAll('.t-border').forEach(el => {
+            if(el.style.borderTop) el.style.borderTopColor = c;
+            if(el.style.borderLeft) el.style.borderLeftColor = c;
         });
+        updateBG();
     }
+    function updateBG() {
+        const f = document.getElementById('ORIGINAL_FRAME');
+        const main = document.getElementById('mainContentBox');
+        const pair = document.getElementById('pairingBox');
+        if (isWhite) {
+            f.style.backgroundColor = "#e2e8f0";
+            f.style.backgroundImage = "none";
+            main.style.background = "rgba(255, 255, 255, 0.85)";
+            pair.style.background = "#f8fafc";
+        } else {
+            f.style.backgroundColor = "#020617";
+            f.style.backgroundImage = `linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.8) 150px, transparent 250px), linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px), radial-gradient(circle at 50% 100%, #1e3a8a 0%, #020617 85%)`;
+            main.style.background = "rgba(15, 23, 42, 0.75)";
+            pair.style.background = "#020617";
+        }
+    }
+    function toggleWhite() { isWhite = !isWhite; updateBG(); }
+    function download() { 
+        html2canvas(document.getElementById('ORIGINAL_FRAME'), { 
+            scale: 3, 
+            useCORS: true,
+            backgroundColor: isWhite ? "#e2e8f0" : "#020617"
+        }).then(c => { 
+            const a = document.createElement('a'); 
+            a.download = 'FGD_INTERFACE.png'; 
+            a.href = c.toDataURL('image/png'); 
+            a.click(); 
+        }); 
+    }
+    function copy() { navigator.clipboard.writeText(document.getElementById('ORIGINAL_FRAME').outerHTML).then(() => alert("코드 복사됨")); }
+    apply();
 </script>
 </body>
 </html>
