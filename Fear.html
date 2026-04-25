@@ -34,7 +34,7 @@
     <div class="field"><label>[페어링] 문구</label><textarea id="pairingInput" oninput="apply()">[센티넬&가이드]가 기본이지만, [센티넬&센티넬] 페어도 존재한다.</textarea></div>
     
     <div class="btn-group">
-        <button class="btn btn-blue" onclick="download()">고화질 JPG 저장</button>
+        <button class="btn btn-blue" onclick="download()">고화질 PNG 저장</button>
         <button class="btn btn-dark" onclick="copy()">최종 코드 복사</button>
         <button class="btn btn-dark" onclick="toggleWhite()">화이트/다크 모드 전환</button>
     </div>
@@ -121,38 +121,41 @@
     }
     function updateBG() {
         const f = document.getElementById('ORIGINAL_FRAME');
-        const c = document.getElementById('colorInput').value;
-        
         if (isWhite) {
             f.style.backgroundColor = "#e2e8f0";
             f.style.color = "#334155";
-            const gradTop = 'rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 150px, transparent 250px';
-            f.style.backgroundImage = `linear-gradient(to bottom, ${gradTop}), linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px), radial-gradient(circle at 50% 100%, #cbd5e1 0%, #e2e8f0 85%)`;
-            
+            f.style.backgroundImage = `linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 150px, transparent 250px), linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px), radial-gradient(circle at 50% 100%, #cbd5e1 0%, #e2e8f0 85%)`;
             document.getElementById('mainContentBox').style.background = "rgba(255, 255, 255, 0.85)";
             document.getElementById('mainContentBox').style.borderColor = "rgba(0, 0, 0, 0.1)";
             document.getElementById('pairingBox').style.background = "#f8fafc";
-            
             document.querySelectorAll('.t-header-text').forEach(el => el.style.color = "#1e293b");
             document.querySelectorAll('.t-content-text').forEach(el => el.style.color = "#475569");
             document.querySelectorAll('.t-sub-box').forEach(el => el.style.color = "#475569");
         } else {
             f.style.backgroundColor = "#020617";
             f.style.color = "#94a3b8";
-            const gradTop = '#000 0%, rgba(0,0,0,0.8) 150px, transparent 250px';
-            f.style.backgroundImage = `linear-gradient(to bottom, ${gradTop}), linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px), radial-gradient(circle at 50% 100%, #1e3a8a 0%, #020617 85%)`;
-            
+            f.style.backgroundImage = `linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.8) 150px, transparent 250px), linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px), radial-gradient(circle at 50% 100%, #1e3a8a 0%, #020617 85%)`;
             document.getElementById('mainContentBox').style.background = "rgba(15, 23, 42, 0.75)";
             document.getElementById('mainContentBox').style.borderColor = "rgba(59, 130, 246, 0.2)";
             document.getElementById('pairingBox').style.background = "#020617";
-            
             document.querySelectorAll('.t-header-text').forEach(el => el.style.color = "#ffffff");
             document.querySelectorAll('.t-content-text').forEach(el => el.style.color = "#94a3b8");
             document.querySelectorAll('.t-sub-box').forEach(el => el.style.color = "#cbd5e1");
         }
     }
     function toggleWhite() { isWhite = !isWhite; apply(); }
-    function download() { html2canvas(document.getElementById('ORIGINAL_FRAME'), { scale: 3, useCORS: true }).then(c => { const a = document.createElement('a'); a.download = 'FGD_INTERFACE.jpg'; a.href = c.toDataURL('image/jpeg', 0.95); a.click(); }); }
+    function download() { 
+        html2canvas(document.getElementById('ORIGINAL_FRAME'), { 
+            scale: 3, 
+            useCORS: true,
+            backgroundColor: null // PNG의 투명도 유지를 위해 배경 처리
+        }).then(c => { 
+            const a = document.createElement('a'); 
+            a.download = 'FGD_INTERFACE.png'; 
+            a.href = c.toDataURL('image/png'); 
+            a.click(); 
+        }); 
+    }
     function copy() { navigator.clipboard.writeText(document.getElementById('ORIGINAL_FRAME').outerHTML).then(() => alert("코드 복사됨")); }
     apply();
 </script>
