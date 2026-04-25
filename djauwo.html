@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR (DESIGN PRESERVED)</title>
+    <title>HUD MASTER EDITOR (SPACING FIXED)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
-        /* 편집기 기본 UI */
+        /* 편집기 레이아웃 */
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
         .editor-panel { width: 450px; background: #1a111a; border-right: 1px solid #3d1c2d; padding: 20px; overflow-y: auto; box-sizing: border-box; }
         .preview-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; overflow: auto; background: #000; }
@@ -20,10 +20,10 @@
         .btn-extract { width: 100%; padding: 15px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
         .btn-copy { width: 100%; padding: 10px; background: transparent; color: var(--main-color); border: 1px solid var(--main-color); border-radius: 6px; font-family: 'Rajdhani'; font-size: 12px; cursor: pointer; margin-top: 10px; }
 
-        /* [디자인 보존용 테마 변수] */
+        /* 테마 변수 */
         :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
 
-        /* [원본 디자인 코드 - 절대 변경 금지 영역] */
+        /* [HUD 디자인 - 간격 수정본] */
         .hud-wrapper, .hud-wrapper * { box-sizing: border-box; }
         .hud-wrapper { width: 100%; max-width: 480px; background: rgba(10, 0, 10, 0.95); font-family: 'Rajdhani', sans-serif; border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); box-shadow: 0 0 20px rgba(var(--main-rgb), 0.5), inset 0 0 10px rgba(var(--main-rgb), 0.3); margin: 0 auto; position: relative; color: #fff; }
         .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
@@ -35,22 +35,28 @@
         .meta-container b { color: #fff; text-transform: uppercase; }
         .hud-body { padding: 24px; }
         
+        /* 이미지 영역 */
+        .profile-viewer { position: relative; margin-bottom: 32px; line-height: 0; } /* 간격 32px로 확보 */
         .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.5); position: relative; background: #000; line-height: 0; }
-        .image-card::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--main-color); mix-blend-mode: color; opacity: 0.25; pointer-events: none; }
-        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.05); }
+        .image-card::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--main-color); mix-blend-mode: color; opacity: 0.2; pointer-events: none; }
+        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); }
         
         .rank-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; padding: 4px 10px; font-size: 0.85rem; font-weight: 800; line-height: 1; text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); text-transform: uppercase; letter-spacing: 1px; z-index: 20; border-radius: 2px; }
-        .info-section { display: grid; gap: 16px; }
-        .info-item { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid rgba(var(--main-rgb), 0.3); padding-left: 12px; }
-        .info-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--main-color); text-transform: uppercase; }
-        .info-value { font-size: 0.95rem; color: #ffffff; }
-        .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); }
+        
+        /* 정보 섹션 */
+        .info-section { display: grid; gap: 20px; } /* 내부 아이템 간격도 20px로 조정 */
+        .info-item { display: flex; flex-direction: column; gap: 6px; border-left: 2px solid rgba(var(--main-rgb), 0.4); padding-left: 14px; }
+        .info-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--main-color); text-transform: uppercase; letter-spacing: 1px; }
+        .info-value { font-size: 1rem; color: #ffffff; font-weight: 500; }
+        
+        .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 12px; border-radius: 4px; margin-top: 8px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); }
         .quote-label { color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; font-weight: bold; }
         
-        .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(var(--main-rgb), 0.1); border: 1px solid var(--main-color); border-radius: 4px; position: relative; }
+        /* 위험 고지 */
+        .hazard-notice { margin-top: 36px; padding: 18px; background: rgba(var(--main-rgb), 0.1); border: 1px solid var(--main-color); border-radius: 4px; position: relative; }
         .hazard-notice::before { content: ""; position: absolute; top: 0; left: 0; width: 10px; height: 100%; background: repeating-linear-gradient(45deg, var(--main-color), var(--main-color) 5px, transparent 5px, transparent 10px); }
-        .hazard-title { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; }
-        .hazard-desc { font-size: 0.85rem; color: #fff; line-height: 1.5; padding-left: 20px; }
+        .hazard-title { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 8px; padding-left: 20px; }
+        .hazard-desc { font-size: 0.85rem; color: #fff; line-height: 1.6; padding-left: 20px; }
         
         .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(var(--main-rgb), 0.5); text-transform: uppercase; }
     </style>
@@ -64,8 +70,8 @@
         <input type="color" id="c-master" value="#ff4d8d" oninput="up()">
     </div>
     <div class="edit-group">
-        <label>IMAGE URL / FILE</label>
-        <input type="text" id="i-url" placeholder="이미지 주소..." oninput="up()">
+        <label>IMAGE SETTING</label>
+        <input type="text" id="i-url" placeholder="이미지 URL..." oninput="up()">
         <input type="file" accept="image/*" onchange="upImg(this)" style="margin-top:5px">
     </div>
     <div class="edit-group">
@@ -83,7 +89,7 @@
         <div class="row"><input type="text" id="t-l2" value="DEPLOYMENT LOG" oninput="up()"><input type="text" id="t-v2" value="페어링 이력 있음" oninput="up()"></div>
     </div>
     <div class="edit-group">
-        <label>LOGS (LABEL 1,2 / TEXT 1,2)</label>
+        <label>LOGS</label>
         <div class="row"><input type="text" id="t-qlab1" value="AUDIO_LOG >" oninput="up()"><input type="text" id="t-qlab2" value="AUDIO_LOG >" oninput="up()"></div>
         <textarea id="t-q1" oninput="up()" style="margin-bottom:5px">“으응, 가만히 있을게. 강아지는 나한테만 집중해요.”</textarea>
         <textarea id="t-q2" oninput="up()">“이건 딱딱하다... 차라리 네 목덜미를 깨물게 해줘.”</textarea>
@@ -164,7 +170,7 @@
     function copy() {
         const clone = document.getElementById('hud').cloneNode(true);
         const style = document.querySelector('style').innerHTML;
-        navigator.clipboard.writeText(`<div><style>${style}<\/style>${clone.outerHTML}<\/div>`).then(()=>alert('디자인 보존 상태로 복사 완료!'));
+        navigator.clipboard.writeText(`<div><style>${style}<\/style>${clone.outerHTML}<\/div>`).then(()=>alert('간격 수정 완료 및 복사 성공!'));
     }
     up();
 </script>
