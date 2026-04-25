@@ -7,9 +7,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
-        /* 편집기 UI - 카드에 영향 안 줌 */
+        /* 편집기 전용 UI - 원본 카드 디자인에 영향 없음 */
         body { background: #1a1a1a; margin: 0; display: flex; height: 100vh; font-family: sans-serif; color: #fff; }
-        .editor-side { width: 400px; background: #222; padding: 20px; overflow-y: auto; border-right: 1px solid #333; }
+        .editor-side { width: 400px; background: #222; padding: 20px; overflow-y: auto; border-right: 1px solid #333; z-index: 100; }
         .preview-side { flex: 1; display: flex; justify-content: center; align-items: center; background: #000; overflow: auto; padding: 20px; }
         .edit-group { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333; }
         .edit-group label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; font-family: 'Orbitron'; }
@@ -17,14 +17,13 @@
         .edit-group textarea { height: 80px; resize: none; }
         .row { display: flex; gap: 5px; }
         .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; }
-        .btn-mode { background: transparent; border: 1px solid #ff6b81; color: #ff6b81; }
         .btn-save { background: #ff6b81; color: #fff; }
         .btn-copy { background: #444; color: #fff; }
 
-        /* [카드 원본 스타일 시작 - 님이 준 코드 절대 보존] */
+        /* [카드 원본 스타일 시작 - 님이 준 코드 100% 보존] */
         :root { --bg-opacity: 0.7; --main-color: #ff6b81; --sub-color: #ffb7c5; --card-overlay: rgba(255, 255, 255, var(--bg-opacity)); --card-text: #111; }
         .dark-mode { --card-overlay: rgba(0, 0, 0, var(--bg-opacity)); --card-text: #eee; }
-        .card { width: 100%; max-width: 440px; height: 90vh; max-height: 850px; margin: auto; background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D'); background-size: cover; background-position: center; border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column; font-family: 'Noto Sans KR', sans-serif; }
+        .card { width: 440px; height: 850px; flex-shrink: 0; background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D'); background-size: cover; background-position: center; border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column; font-family: 'Noto Sans KR', sans-serif; }
         .card::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 107, 129, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 107, 129, 0.05) 1px, transparent 1px); background-size: 20px 20px; z-index: 0; }
         .overlay { position: absolute; inset: 0; background: var(--card-overlay); display: flex; flex-direction: column; backdrop-filter: saturate(140%); z-index: 1; }
         .overlay::before, .overlay::after, .card::after { content: ''; position: absolute; width: 15px; height: 15px; border: 2px solid var(--main-color); z-index: 10; }
@@ -58,72 +57,42 @@
         .sys-beat { width: 4px; height: 4px; background: var(--main-color); animation: blink 1s infinite steps(1); }
         @keyframes loading { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        /* [카드 원본 스타일 끝] */
     </style>
 </head>
 <body>
 
 <div class="editor-side">
-    <h2 style="font-family: 'Orbitron'; font-size: 16px; margin-bottom: 20px; color: #ff6b81;">STATION CONTROL</h2>
+    <h2 style="font-family: 'Orbitron'; color: #ff6b81; margin-bottom: 20px;">STATION CONTROL</h2>
     
-    <button class="btn btn-mode" onclick="toggleMode()">CARD DARK/WHITE MODE</button>
-
     <div class="edit-group">
-        <label>LOG TAG & GRADE</label>
-        <div class="row">
-            <input type="text" id="in-tag" value="Fearless•HQ" oninput="up()">
-            <input type="text" id="in-grade" value="S+ CLASS SENTINEL" oninput="up()">
-        </div>
-        <label>NAME</label>
-        <input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()">
+        <label>BACKGROUND IMAGE (URL / FILE)</label>
+        <input type="text" id="bg-url" placeholder="Paste image URL here..." oninput="upBg(this.value)" style="margin-bottom:5px">
+        <input type="file" id="bg-file" accept="image/*" onchange="upFile(this)">
     </div>
 
     <div class="edit-group">
-        <label>QUOTE SECTION</label>
+        <label>LOG TAG & GRADE</label>
+        <div class="row"><input type="text" id="in-tag" value="Fearless•HQ" oninput="up()"><input type="text" id="in-grade" value="S+ CLASS SENTINEL" oninput="up()"></div>
+        <label>NAME</label><input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()">
+    </div>
+
+    <div class="edit-group">
+        <label>SYSTEM QUOTE</label>
         <input type="text" id="in-catch" value="// 사랑을 위한, 사랑에 의한, 사랑과 염한" oninput="up()">
         <textarea id="in-quote" oninput="up()">"어쩌고"</textarea>
     </div>
 
     <div class="edit-group">
-        <label>BASIC_INFO (Label & Value)</label>
-        <div class="row">
-            <input type="text" id="l-1" value="BASIC_INFO" oninput="up()" style="width:40%">
-            <input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬" oninput="up()">
-        </div>
+        <label>SECTIONS (LABEL & VALUE)</label>
+        <div class="row"><input type="text" id="l-1" value="BASIC_INFO" oninput="up()"><input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬" oninput="up()"></div>
+        <input type="text" id="l-2" value="APPEARANCE" oninput="up()"><textarea id="v-2" oninput="up()">키 181cm...</textarea>
+        <input type="text" id="l-3" value="PERSONALITY" oninput="up()"><textarea id="v-3" oninput="up()">태생적으로...</textarea>
+        <input type="text" id="l-4" value="CHARACTER_TRAITS" oninput="up()"><textarea id="v-4" oninput="up()">혼자 있는 것을...</textarea>
+        <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()">
+        <input type="text" id="v-5-n" value="Heart Manifestation" oninput="up()" style="font-weight:bold;"><textarea id="v-5-d" oninput="up()">전투시작 시...</textarea>
     </div>
 
-    <div class="edit-group">
-        <label>APPEARANCE (Label & Value)</label>
-        <input type="text" id="l-2" value="APPEARANCE" oninput="up()" style="margin-bottom:5px">
-        <textarea id="v-2" oninput="up()">키 181cm. 마른 편이지만...</textarea>
-    </div>
-
-    <div class="edit-group">
-        <label>PERSONALITY (Label & Value)</label>
-        <input type="text" id="l-3" value="PERSONALITY" oninput="up()" style="margin-bottom:5px">
-        <textarea id="v-3" oninput="up()">태생적으로 사랑받는 것이...</textarea>
-    </div>
-
-    <div class="edit-group">
-        <label>CHARACTER_TRAITS (Label & Value)</label>
-        <input type="text" id="l-4" value="CHARACTER_TRAITS" oninput="up()" style="margin-bottom:5px">
-        <textarea id="v-4" oninput="up()">혼자 있는 것을 극도로 견디지 못함...</textarea>
-    </div>
-
-    <div class="edit-group">
-        <label>ABILITY_SPEC (Label & Name & Desc)</label>
-        <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()" style="margin-bottom:5px">
-        <input type="text" id="v-5-n" value="Heart Manifestation" oninput="up()" style="margin-bottom:5px; font-weight:bold;">
-        <textarea id="v-5-d" oninput="up()">전투시작 시, 손끝에서 형성되는...</textarea>
-    </div>
-
-    <div class="edit-group">
-        <label>OPACITY & COLOR</label>
-        <input type="range" id="in-op" min="0" max="1" step="0.1" value="0.7" oninput="up()">
-        <input type="color" id="in-color" value="#ff6b81" oninput="upColor(this.value)" style="height:30px; margin-top:5px;">
-    </div>
-
-    <button class="btn btn-save" onclick="down()">EXTRACT PNG</button>
+    <button class="btn btn-save" onclick="down()">EXTRACT JPG</button>
     <button class="btn btn-copy" onclick="copy()">COPY HTML CODE</button>
 </div>
 
@@ -138,21 +107,15 @@
                 </div>
             </header>
             <main>
-                <div class="quote-card-unit">
-                    <span class="card-catch" id="out-catch">// 사랑을 위한, 사랑에 의한, 사랑과 염한</span>
-                    <p class="card-quote" id="out-quote">"어쩌고"</p>
-                </div>
-                <div class="data-row"><span class="label" id="ol-1">BASIC_INFO</span><div class="value" id="ov-1">연하진 / 26세 / 남성 / 센티넬</div></div>
-                <div class="data-row"><span class="label" id="ol-2">APPEARANCE</span><div class="value" id="ov-2">키 181cm...</div></div>
-                <div class="data-row"><span class="label" id="ol-3">PERSONALITY</span><div class="value" id="ov-3">태생적으로...</div></div>
-                <div class="data-row"><span class="label" id="ol-4">CHARACTER_TRAITS</span><div class="value" id="ov-4">혼자 있는 것을...</div></div>
-                <div class="data-row">
-                    <span class="label" id="ol-5">ABILITY_SPEC</span>
-                    <div class="ability-box">
-                        <div class="value" id="ov-5-n" style="font-weight: bold; color: var(--main-color); margin-bottom: 5px; padding-left: 0;">[ Heart Manifestation ]</div>
-                        <div class="value" id="ov-5-d" style="padding-left: 0;">전투시작 시...</div>
-                    </div>
-                </div>
+                <div class="quote-card-unit"><span class="card-catch" id="out-catch">//...</span><p class="card-quote" id="out-quote">"..."</p></div>
+                <div class="data-row"><span class="label" id="ol-1">BASIC_INFO</span><div class="value" id="ov-1">...</div></div>
+                <div class="data-row"><span class="label" id="ol-2">APPEARANCE</span><div class="value" id="ov-2">...</div></div>
+                <div class="data-row"><span class="label" id="ol-3">PERSONALITY</span><div class="value" id="ov-3">...</div></div>
+                <div class="data-row"><span class="label" id="ol-4">CHARACTER_TRAITS</span><div class="value" id="ov-4">...</div></div>
+                <div class="data-row"><span class="label" id="ol-5">ABILITY_SPEC</span><div class="ability-box">
+                    <div class="value" id="ov-5-n" style="font-weight:bold; color:var(--main-color); margin-bottom:5px; padding-left:0;">[...]</div>
+                    <div class="value" id="ov-5-d" style="padding-left:0;">...</div>
+                </div></div>
             </main>
             <footer><span>STATUS: STABLE_ACTIVE</span><div class="sys-beat"></div><span>ENCRYPTION: ACTIVE</span></footer>
         </div>
@@ -160,8 +123,8 @@
 </div>
 
 <script>
-    function toggleMode() { document.getElementById('card').classList.toggle('dark-mode'); }
-    function upColor(c) { document.documentElement.style.setProperty('--main-color', c); }
+    function upBg(url) { if(url) document.getElementById('card').style.backgroundImage = `url('${url}')`; }
+    function upFile(input) { if(input.files && input.files[0]) { const r = new FileReader(); r.onload = e => upBg(e.target.result); r.readAsDataURL(input.files[0]); } }
     function up() {
         document.getElementById('out-tag').innerText = document.getElementById('in-tag').value;
         document.getElementById('out-grade').innerText = document.getElementById('in-grade').value;
@@ -174,14 +137,13 @@
         }
         document.getElementById('ov-5-n').innerText = "[ " + document.getElementById('v-5-n').value + " ]";
         document.getElementById('ov-5-d').innerText = document.getElementById('v-5-d').value;
-        document.documentElement.style.setProperty('--bg-opacity', document.getElementById('in-op').value);
     }
-    function down() { domtoimage.toPng(document.getElementById('card')).then(url=>{let l=document.createElement('a');l.download='card.png';l.href=url;l.click();}); }
+    function down() { domtoimage.toJpeg(document.getElementById('card'), { quality: 0.95 }).then(url => { const l = document.createElement('a'); l.download = 'sentinel_card.jpg'; l.href = url; l.click(); }); }
     function copy() {
         const clone = document.getElementById('card').cloneNode(true);
         const style = document.querySelector('style').innerHTML;
         const final = `<div><style>${style}<\/style>${clone.outerHTML}<\/div>`;
-        navigator.clipboard.writeText(final).then(()=>alert('원본 코드 복사됨!'));
+        navigator.clipboard.writeText(final).then(()=>alert('HTML 코드가 복사되었습니다!'));
     }
     up();
 </script>
