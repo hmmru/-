@@ -3,27 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S+ CLASS SENTINEL EDITOR FINAL</title>
+    <title>S+ CLASS SENTINEL EDITOR (PRO)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
-        /* [1. 편집기 전용 시스템 변수] */
+        /* [편집기 UI 스타일 - 화이트 고정] */
         :root {
             --ui-bg: #f5f7fa;
-            --sidebar-bg: #ffffff;
+            --ui-sidebar: #ffffff;
             --ui-text: #2d3436;
             --ui-border: #dfe6e9;
-            --ui-input: #ffffff;
-            --main-color: #ff6b81; /* 카드 포인트 컬러 동기화 */
-            --card-opacity: 0.7;
-        }
-
-        .dark-mode {
-            --ui-bg: #121212;
-            --sidebar-bg: #1e1e1e;
-            --ui-text: #f1f2f6;
-            --ui-border: #333333;
-            --ui-input: #2d2d2d;
         }
 
         body {
@@ -33,144 +22,150 @@
             height: 100vh;
             font-family: 'Noto Sans KR', sans-serif;
             color: var(--ui-text);
-            transition: background 0.3s, color 0.3s;
         }
 
-        /* [2. 편집기 레이아웃 스타일] */
         .editor-panel {
-            width: 380px;
-            background: var(--sidebar-bg);
-            padding: 25px;
-            border-right: 1px solid var(--ui-border);
-            z-index: 100;
-            overflow-y: auto;
-            box-sizing: border-box;
-            transition: background 0.3s;
+            width: 380px; background: var(--ui-sidebar);
+            padding: 25px; border-right: 1px solid var(--ui-border);
+            z-index: 100; overflow-y: auto; box-sizing: border-box;
         }
 
-        .header-wrap { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 25px; 
-            border-bottom: 2px solid var(--main-color);
-            padding-bottom: 10px;
-        }
+        .header-wrap { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .editor-panel h2 { font-family: 'Orbitron'; font-size: 1rem; color: #ff6b81; margin: 0; }
         
-        .editor-panel h2 { font-family: 'Orbitron'; font-size: 1rem; color: var(--main-color); margin: 0; }
-        
-        .theme-toggle {
-            padding: 5px 12px; font-size: 10px; font-family: 'Orbitron'; border-radius: 4px;
-            border: 1px solid var(--ui-border); background: var(--ui-input); color: var(--ui-text);
-            cursor: pointer; transition: 0.2s;
+        .mode-toggle {
+            padding: 6px 12px; font-size: 10px; font-family: 'Orbitron'; border-radius: 4px;
+            border: 1px solid #ff6b81; background: transparent; color: #ff6b81; cursor: pointer;
         }
-        .theme-toggle:hover { border-color: var(--main-color); color: var(--main-color); }
+        .mode-toggle:hover { background: #ff6b81; color: white; }
 
-        .control-group { margin-bottom: 18px; }
-        .control-group label { display: block; font-size: 11px; font-weight: bold; color: #888; margin-bottom: 6px; text-transform: uppercase; }
+        .control-group { margin-bottom: 15px; }
+        .control-group label { display: block; font-size: 11px; font-weight: bold; color: #888; margin-bottom: 5px; }
         .control-group input, .control-group textarea { 
-            width: 100%; padding: 12px; border: 1px solid var(--ui-border); border-radius: 6px; 
-            background: var(--ui-input); color: var(--ui-text); box-sizing: border-box; font-size: 0.9rem;
-            transition: border-color 0.2s;
+            width: 100%; padding: 10px; border: 1px solid var(--ui-border); border-radius: 6px; 
+            background: #fff; color: #333; box-sizing: border-box; font-size: 0.9rem;
         }
-        .control-group input:focus, .control-group textarea:focus { outline: none; border-color: var(--main-color); }
-        .control-group textarea { height: 70px; resize: none; }
+        .control-group textarea { height: 60px; resize: none; }
 
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 30px; }
-        .btn-save { padding: 16px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 107, 129, 0.2); }
-        .btn-save:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn-copy { padding: 12px; background: rgba(127,127,127,0.1); color: var(--ui-text); border: none; border-radius: 6px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; }
+        .btn-save { 
+            width: 100%; padding: 15px; background: #ff6b81; color: #fff; border: none; 
+            border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; margin-top: 10px;
+        }
 
-        /* [3. 프리뷰 영역 및 카드 원본 보존] */
-        .preview-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; background: #0a0a0a; }
+        .preview-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; background: #e0e0e0; }
+
+        /* =========================================
+           [카드 코드 - 님이 준 원본 절대 보존]
+           ========================================= */
+        :root {
+            --bg-opacity: 0.7; 
+            --main-color: #ff6b81;
+            --sub-color: #ffb7c5;
+            /* 카드 모드용 변수 */
+            --card-bg: rgba(255, 255, 255, var(--bg-opacity));
+            --card-text: #111;
+        }
+
+        /* [카드 다크모드 적용 시] */
+        .card-dark-mode {
+            --card-bg: rgba(0, 0, 0, var(--bg-opacity));
+            --card-text: #eee;
+        }
 
         .card {
-            width: 440px; height: 850px;
-            background-color: #222;
+            width: 100%; max-width: 440px; height: 850px; margin: auto;
+            background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
             background-size: cover; background-position: center;
-            border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0;
+            border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column;
         }
 
         .card::before {
             content: ''; position: absolute; inset: 0;
-            background-image: linear-gradient(var(--main-color) 0.5px, transparent 0.5px), linear-gradient(90deg, var(--main-color) 0.5px, transparent 0.5px);
-            background-size: 20px 20px; z-index: 0; opacity: 0.1;
+            background-image: linear-gradient(rgba(255, 107, 129, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 107, 129, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px; z-index: 0;
         }
 
         .overlay {
-            position: absolute; inset: 0; background: rgba(0, 0, 0, var(--card-opacity));
+            position: absolute; inset: 0;
+            background: var(--card-bg); /* 모드에 따라 변경 */
             display: flex; flex-direction: column; backdrop-filter: saturate(140%); z-index: 1;
+            transition: background 0.3s;
         }
 
-        .overlay::before, .overlay::after, .card::after { content: ''; position: absolute; width: 15px; height: 15px; border: 2px solid var(--main-color); z-index: 10; }
+        .overlay::before, .overlay::after, .card::after {
+            content: ''; position: absolute; width: 15px; height: 15px; border: 2px solid var(--main-color); z-index: 10;
+        }
         .overlay::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
         .overlay::after { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
         .card::after { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
 
-        header { padding: 30px 30px 15px; border-bottom: 1px solid var(--main-color); }
-        .sys-log { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .sys-load-bar { width: 60px; height: 2px; background: var(--main-color); opacity: 0.2; position: relative; overflow: hidden; }
-        .sys-load-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--main-color); animation: loading 2s infinite; }
+        header { padding: 30px 30px 15px; border-bottom: 1px solid var(--main-color); position: relative; }
+        .sys-log { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--main-color); letter-spacing: 2px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .sys-load-bar { width: 60px; height: 2px; background: rgba(255, 107, 129, 0.15); position: relative; overflow: hidden; }
+        .sys-load-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--main-color); animation: loading 2s infinite ease-in-out; }
         
-        .grade { font-family: 'Orbitron'; font-size: 0.75rem; color: var(--main-color); font-weight: 800; display: block; margin-bottom: -5px; }
-        .code-name-wrap { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--main-color); font-weight: 900; margin: 0; line-height: 1.1; }
+        .title-box { display: flex; flex-direction: column; gap: 0 !important; }
+        .grade { font-family: 'Orbitron'; font-size: 0.75rem; color: var(--main-color); font-weight: 800; letter-spacing: 1px; line-height: 1; margin: 0 !important; }
+        .code-name-wrap { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--main-color); font-weight: 900; line-height: 1; margin: 0 !important; }
 
-        main { flex: 1; padding: 25px 30px; overflow-y: auto; background-image: repeating-linear-gradient(0deg, var(--main-color) 0px, var(--main-color) 0.5px, transparent 0.5px, transparent 3px); background-size: 100% 4px; }
-        .quote-card-unit { margin-bottom: 30px; padding: 18px 20px; background: rgba(127, 127, 127, 0.05); border: 1px solid rgba(127, 127, 127, 0.2); }
-        .card-catch { font-family: 'JetBrains Mono'; font-size: 9px; color: var(--main-color); font-weight: 800; margin-bottom: 6px; display: block; }
-        .card-quote { font-size: 0.95rem; color: var(--main-color); font-weight: 700; line-height: 1.5; margin: 0; }
-        
+        main { flex: 1; padding: 25px 30px; overflow-y: auto; background-image: repeating-linear-gradient(0deg, rgba(255, 107, 129, 0.02) 0px, rgba(255, 107, 129, 0.02) 1px, transparent 1px, transparent 3px); }
+        main::-webkit-scrollbar { width: 2px; }
+        main::-webkit-scrollbar-thumb { background: var(--main-color); }
+
+        .quote-card-unit { margin-bottom: 30px; position: relative; padding: 18px 20px; background: rgba(255, 107, 129, 0.05); border: 1px solid rgba(255, 107, 129, 0.2); }
+        .quote-card-unit::before, .quote-card-unit::after { content: ''; position: absolute; width: 8px; height: 8px; border: 2px solid var(--main-color); }
+        .quote-card-unit::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+        .quote-card-unit::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+        .card-catch { font-family: 'JetBrains Mono'; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; opacity: 0.7; }
+        .card-quote { font-size: 0.95rem; color: var(--main-color); font-weight: 700; line-height: 1.5; }
+
         .label { font-family: 'Orbitron'; font-size: 0.7rem; color: var(--main-color); font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
-        .value { font-family: 'JetBrains Mono', 'Noto Sans KR'; font-size: 0.92rem; color: #eee; line-height: 1.6; padding-left: 8px; margin-bottom: 20px; white-space: pre-wrap; }
         
-        .ability-box { background: rgba(127, 127, 127, 0.08); border: 1px solid var(--main-color); padding: 18px; }
-        footer { padding: 15px 30px; font-family: 'JetBrains Mono'; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; }
+        .value { 
+            font-family: 'JetBrains Mono', 'Noto Sans KR'; font-size: 0.92rem; 
+            color: var(--card-text); /* 모드 전환 영향 */
+            line-height: 1.8; padding-left: 8px; text-align: justify; transition: color 0.3s;
+        }
+
+        .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 18px; margin-top: 8px; position: relative; }
+        .ability-box::after { content: 'POWER_DATA'; position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono'; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
+
+        footer { padding: 15px 30px; font-family: 'JetBrains Mono'; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; background: rgba(255, 107, 129, 0.05); }
+        .sys-beat { width: 4px; height: 4px; background: var(--main-color); animation: blink 1s infinite steps(1); }
 
         @keyframes loading { 0% { left: -100%; } 100% { left: 100%; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
 <div class="editor-panel">
     <div class="header-wrap">
-        <h2>CENTRAL_HUB v2.5</h2>
-        <button class="theme-toggle" onclick="document.body.classList.toggle('dark-mode')">🌓 MODE</button>
+        <h2>CARD_STATION</h2>
+        <button class="mode-toggle" onclick="toggleCardMode()">CARD MODE</button>
     </div>
     
-    <div class="control-group"><label>BACK_IMG</label><input type="file" accept="image/*" onchange="handleFile(this)"></div>
+    <div class="control-group"><label>IMG_SRC</label><input type="file" accept="image/*" onchange="handleFile(this)"></div>
     <div class="control-group"><label>TAG</label><input type="text" id="affilInput" value="Fearless•HQ" oninput="updateUI()"></div>
     <div class="control-group"><label>GRADE</label><input type="text" id="gradeInput" value="S+ CLASS SENTINEL" oninput="updateUI()"></div>
-    <div class="control-group"><label>CODE_NAME</label><input type="text" id="nameInput" value="CODE NAME: LOVE" oninput="updateUI()"></div>
-    <div class="control-group"><label>SYSTEM_QUOTE</label><textarea id="quoteInput" oninput="updateUI()">사랑을 위한, 사랑에 의한, 사랑과 염한</textarea></div>
+    <div class="control-group"><label>IDENTITY</label><input type="text" id="nameInput" value="CODE NAME: LOVE" oninput="updateUI()"></div>
+    <div class="control-group"><label>SYSTEM_QUOTE</label><textarea id="quoteInput" oninput="updateUI()">"어쩌고"</textarea></div>
     
     <div class="control-group">
         <label>UNIT_DATA</label>
-        <input type="text" id="infoInput" value="연하진 / 26세 / 남성 / 센티넬" oninput="updateUI()" style="margin-bottom:8px;">
-        <textarea id="appInput" oninput="updateUI()" placeholder="APPEARANCE">키 181cm. 마른 편이지만 탄탄하고 유연한 몸...</textarea>
-        <textarea id="persInput" oninput="updateUI()" style="margin-top:8px;" placeholder="PERSONALITY">겉으로는 유순해 보이나 목표를 위해선 물불 가리지 않는...</textarea>
+        <textarea id="appInput" oninput="updateUI()" placeholder="APPEARANCE">키 181cm...</textarea>
+        <textarea id="persInput" oninput="updateUI()" style="margin-top:5px;" placeholder="PERSONALITY">태생적으로 사랑받는...</textarea>
     </div>
 
     <div class="control-group">
-        <label>ABILITY_SPEC</label>
-        <input type="text" id="abNameInput" value="Heart Manifestation" oninput="updateUI()" style="margin-bottom:8px;">
-        <textarea id="abDescInput" oninput="updateUI()">전투시작 시, 손끝에서 형성되는 핑크빛 에너지체...</textarea>
+        <label>OPACITY / COLOR</label>
+        <input type="range" id="opacityInput" min="0" max="1" step="0.05" value="0.7" oninput="updateUI()" style="margin-bottom:10px;">
+        <input type="color" id="customColor" value="#ff6b81" onchange="changeColor(this.value)">
     </div>
 
-    <div class="control-group">
-        <label>OVERLAY_OPACITY</label>
-        <input type="range" id="opacityInput" min="0" max="1" step="0.05" value="0.7" oninput="updateUI()">
-    </div>
-
-    <div class="control-group">
-        <label>SYSTEM_COLOR</label>
-        <input type="color" id="customColor" value="#ff6b81" onchange="changeColor(this.value)" style="height:40px; cursor:pointer; padding:2px;">
-    </div>
-
-    <div class="btn-group">
-        <button class="btn-save" onclick="saveAsImage()">EXTRACT AS PNG</button>
-        <button class="btn-copy" onclick="copyCode()">COPY INTERFACE HTML</button>
-    </div>
+    <button class="btn-save" onclick="saveAsImage()">EXTRACT PNG</button>
 </div>
 
 <div class="preview-area">
@@ -178,28 +173,26 @@
         <div class="overlay">
             <header>
                 <div class="sys-log"><span id="view-affil">Fearless&bull;HQ</span><div class="sys-load-bar"></div></div>
-                <span class="grade" id="view-grade">S+ CLASS SENTINEL</span>
-                <h1 class="code-name-wrap" id="view-name">CODE NAME: LOVE</h1>
+                <div class="title-box">
+                    <span class="grade" id="view-grade">S+ CLASS SENTINEL</span>
+                    <h1 class="code-name-wrap" id="view-name">CODE NAME: LOVE</h1>
+                </div>
             </header>
             <main>
-                <div class="quote-card-unit"><span class="card-catch">// SYSTEM_QUOTE</span><p class="card-quote" id="view-quote">사랑을 위한, 사랑에 의한, 사랑과 염한</p></div>
-                <div class="data-row"><span class="label">BASIC_INFO</span><div class="value" id="view-info">연하진 / 26세 / 남성 / 센티넬</div></div>
-                <div class="data-row"><span class="label">APPEARANCE</span><div class="value" id="view-app">키 181cm. 마른 편이지만 탄탄하고 유연한 몸...</div></div>
-                <div class="data-row"><span class="label">PERSONALITY</span><div class="value" id="view-pers">겉으로는 유순해 보이나 목표를 위해선 물불 가리지 않는...</div></div>
-                <div class="data-row">
-                    <span class="label">ABILITY_SPEC</span>
-                    <div class="ability-box">
-                        <div class="value" id="view-abName" style="font-weight:bold; color:var(--main-color);">[ Heart Manifestation ]</div>
-                        <div class="value" id="view-abDesc" style="margin:0;">전투시작 시, 손끝에서 형성되는 핑크빛 에너지체...</div>
-                    </div>
-                </div>
+                <div class="quote-card-unit"><span class="card-catch">// SYSTEM_QUOTE</span><p class="card-quote" id="view-quote">"어쩌고"</p></div>
+                <div class="data-row"><span class="label">APPEARANCE</span><div class="value" id="view-app">키 181cm...</div></div>
+                <div class="data-row"><span class="label">PERSONALITY</span><div class="value" id="view-pers">태생적으로 사랑받는...</div></div>
             </main>
-            <footer><span>STATUS: STABLE</span><span>ENCRYPTION: ACTIVE</span></footer>
+            <footer><span>STATUS: STABLE_ACTIVE</span><div class="sys-beat"></div><span>ENCRYPTION: ACTIVE</span></footer>
         </div>
     </div>
 </div>
 
 <script>
+    function toggleCardMode() {
+        document.getElementById('export-card').classList.toggle('card-dark-mode');
+    }
+
     function handleFile(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -213,12 +206,9 @@
         document.getElementById('view-grade').innerText = document.getElementById('gradeInput').value;
         document.getElementById('view-name').innerText = document.getElementById('nameInput').value;
         document.getElementById('view-quote').innerText = document.getElementById('quoteInput').value;
-        document.getElementById('view-info').innerText = document.getElementById('infoInput').value;
         document.getElementById('view-app').innerText = document.getElementById('appInput').value;
         document.getElementById('view-pers').innerText = document.getElementById('persInput').value;
-        document.getElementById('view-abName').innerText = "[ " + document.getElementById('abNameInput').value + " ]";
-        document.getElementById('view-abDesc').innerText = document.getElementById('abDescInput').value;
-        document.documentElement.style.setProperty('--card-opacity', document.getElementById('opacityInput').value);
+        document.documentElement.style.setProperty('--bg-opacity', document.getElementById('opacityInput').value);
     }
 
     function changeColor(color) {
@@ -227,16 +217,10 @@
     }
 
     function saveAsImage() {
-        domtoimage.toPng(document.getElementById('export-card'), { quality: 1.0 })
-            .then(url => {
-                const link = document.createElement('a');
-                link.download = 'sentinel-card.png'; link.href = url; link.click();
-            });
-    }
-
-    function copyCode() {
-        const fullHTML = `<!DOCTYPE html><html><head>${document.head.innerHTML}</head><body style="background:#000;display:flex;justify-content:center;padding:50px;">${document.querySelector('.preview-area').innerHTML}</body></html>`;
-        navigator.clipboard.writeText(fullHTML).then(() => alert('HTML 소스 복사 완료!'));
+        domtoimage.toPng(document.getElementById('export-card')).then(url => {
+            const link = document.createElement('a');
+            link.download = 'card.png'; link.href = url; link.click();
+        });
     }
 </script>
 </body>
