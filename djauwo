@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUD PROJECT EDITOR</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
+    <style>
+        /* 편집기 전용 레이아웃 (카드 디자인에 영향 없음) */
+        body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
+        .editor-panel { width: 420px; background: #1a111a; border-right: 1px solid #3d1c2d; padding: 25px; overflow-y: auto; box-sizing: border-box; }
+        .preview-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; overflow: auto; background: #000; }
+        
+        .editor-panel h2 { font-family: 'Rajdhani'; color: #ff4d8d; font-size: 1.2rem; margin-bottom: 20px; border-bottom: 2px solid #ff4d8d; padding-bottom: 10px; }
+        .edit-group { margin-bottom: 18px; }
+        .edit-group label { display: block; font-size: 11px; color: #ff4d8d; font-family: 'Share Tech Mono'; margin-bottom: 6px; letter-spacing: 1px; }
+        .edit-group input, .edit-group textarea { width: 100%; background: #2a1a2a; border: 1px solid #4a2a3a; color: #fff; padding: 10px; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
+        .edit-group textarea { height: 70px; resize: none; }
+        .row { display: flex; gap: 8px; }
+        
+        .btn-extract { width: 100%; padding: 15px; background: #ff4d8d; color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; box-shadow: 0 0 15px rgba(255, 77, 141, 0.3); }
+        .btn-copy { width: 100%; padding: 10px; background: transparent; color: #ff4d8d; border: 1px solid #ff4d8d; border-radius: 6px; font-family: 'Rajdhani'; font-size: 12px; cursor: pointer; margin-top: 10px; }
+
+        /* [사용자 지정 테마 컬러 변수] */
+        :root {
+            --main-color: #ff4d8d;
+            --sub-color: #ffb3d1;
+        }
+
+        /* [카드 원본 스타일 - 님이 준 코드 100% 유지하되 변수만 연결] */
+        .hud-wrapper, .hud-wrapper * { box-sizing: border-box; }
+        .hud-wrapper {
+            width: 100%; max-width: 480px; background: rgba(10, 0, 10, 0.95); font-family: 'Rajdhani', sans-serif; border-radius: 12px; overflow: hidden;
+            border: 2px solid var(--main-color); box-shadow: 0 0 20px rgba(255, 77, 141, 0.5), inset 0 0 10px rgba(255, 77, 141, 0.3); margin: 0 auto; position: relative; color: var(--sub-color);
+        }
+        .hud-wrapper::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(255, 77, 141, 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10;
+        }
+        .hud-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(255, 77, 141, 0.5); position: relative; }
+        .hud-header::after { content: ""; position: absolute; top: -2px; right: -2px; width: 30px; height: 30px; border-top: 4px solid var(--main-color); border-right: 4px solid var(--main-color); }
+        .category-tag { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--main-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
+        .subject { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+        .meta-container { font-size: 0.85rem; color: var(--sub-color); line-height: 1.6; }
+        .meta-container b { color: #fff; text-transform: uppercase; }
+        .hud-body { padding: 24px; }
+        .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
+        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255, 77, 141, 0.5); position: relative; background: #000; line-height: 0; }
+        .image-card img { width: 100%; height: auto; display: block; filter: sepia(0.5) hue-rotate(300deg) brightness(0.9); }
+        .rank-overlay {
+            position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; padding: 4px 10px; font-size: 0.85rem; font-weight: 800; line-height: 1; text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); text-transform: uppercase; letter-spacing: 1px; z-index: 20; border-radius: 2px;
+        }
+        .info-section { display: grid; gap: 16px; }
+        .info-item { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid rgba(255, 77, 141, 0.3); padding-left: 12px; }
+        .info-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--main-color); text-transform: uppercase; }
+        .info-value { font-size: 0.95rem; color: #ffffff; }
+        .quote-log { background: rgba(255, 77, 141, 0.05); border: 1px solid rgba(255, 77, 141, 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: var(--sub-color); }
+        .quote-log::before { content: "AUDIO_LOG >"; color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; }
+        .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(255, 0, 0, 0.1); border: 1px solid rgba(255, 77, 141, 0.8); border-radius: 4px; position: relative; }
+        .hazard-notice::before { content: ""; position: absolute; top: 0; left: 0; width: 10px; height: 100%; background: repeating-linear-gradient(45deg, var(--main-color), var(--main-color) 5px, #0a000a 5px, #0a000a 10px); }
+        .hazard-title { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; }
+        .hazard-desc { font-size: 0.85rem; color: #fff; line-height: 1.5; padding-left: 20px; }
+        .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(255, 179, 209, 0.5); text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="editor-panel">
+    <h2>HUD_CONTROLLER_v1</h2>
+    
+    <div class="edit-group">
+        <label>THEME COLOR (MAIN & SUB)</label>
+        <div class="row">
+            <input type="color" id="color-main" value="#ff4d8d" oninput="upColor()">
+            <input type="color" id="color-sub" value="#ffb3d1" oninput="upColor()">
+        </div>
+    </div>
+
+    <div class="edit-group">
+        <label>PROFILE IMAGE (URL / FILE)</label>
+        <input type="text" id="in-img-url" placeholder="Paste URL here..." oninput="upImg(this.value)" style="margin-bottom:8px;">
+        <input type="file" accept="image/*" onchange="upImgFile(this)">
+    </div>
+
+    <div class="edit-group">
+        <label>HEADER INFO</label>
+        <input type="text" id="in-tag" value="addressee::GREMORY" oninput="upText()">
+        <input type="text" id="in-subject" value="[배정알림] SENTINEL-FILE: 러브" oninput="upText()" style="margin-top:5px;">
+        <textarea id="in-meta" oninput="upText()" style="margin-top:5px;">발신 K (k@fearless.com)
+시간 20XX.04.25_T09:00:00Z
+보안 기밀 (CLASSIFIED::S+ LEVEL)</textarea>
+    </div>
+
+    <div class="edit-group">
+        <label>RANK OVERLAY</label>
+        <input type="text" id="in-rank" value="S+ CLASS" oninput="upText()">
+    </div>
+
+    <div class="edit-group">
+        <label>MAIN DETAILS (LABEL & VALUE)</label>
+        <div class="row"><input type="text" id="in-l1" value="IDENTIFIER" oninput="upText()" style="width:40%;"><input type="text" id="in-v1" value="코드네임: 러브 (LOVE)" oninput="upText()"></div>
+        <div class="row" style="margin-top:5px;"><input type="text" id="in-l2" value="DEPLOYMENT LOG" oninput="upText()" style="width:40%;"><input type="text" id="in-v2" value="페어링 이력 있음" oninput="upText()"></div>
+    </div>
+
+    <div class="edit-group">
+        <label>AUDIO LOGS</label>
+        <textarea id="in-q1" oninput="upText()">“으응, 가만히 있을게. 강아지는 나한테만 집중해요.”</textarea>
+        <textarea id="in-q2" oninput="upText()" style="margin-top:5px;">“이건 딱딱하다... 차라리 네 목덜미를 깨물게 해줘.”</textarea>
+    </div>
+
+    <div class="edit-group">
+        <label>HAZARD NOTICE</label>
+        <input type="text" id="in-ht" value="⚠️ CRITICAL RISK: 초토화 주의" oninput="upText()">
+        <textarea id="in-hd" oninput="upText()" style="margin-top:5px;">폭주 기록: ?회 / 애정 결핍 시 발생. 주변의 영혼을 말려 죽이는 ‘대규모 정서 초토화’ 발생 가능성...</textarea>
+    </div>
+
+    <button class="btn-extract" onclick="extractJpg()">EXTRACT JPG</button>
+    <button class="btn-copy" onclick="copyCode()">COPY HUD CODE</button>
+</div>
+
+<div class="preview-panel">
+    <div class="hud-wrapper" id="hud-card">
+        <div class="hud-header">
+            <span class="category-tag" id="out-tag">addressee::GREMORY</span>
+            <h1 class="subject"><span style="color: #ffffff;"><b id="out-subject">[배정알림] SENTINEL-FILE: 러브</b></span></h1>
+            <div class="meta-container" id="out-meta"><b>발신</b> K (k@fearless.com)<br /><b>시간</b> 20XX.04.25_T09:00:00Z<br /><b>보안</b> 기밀 (CLASSIFIED::S+ LEVEL)</div>
+        </div>
+        <div class="hud-body">
+            <div class="profile-viewer">
+                <div class="image-card">
+                    <img id="out-img" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&amp;fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D" />
+                    <div class="rank-overlay" id="out-rank">S+ CLASS</div>
+                </div>
+            </div>
+            <div class="info-section">
+                <div class="info-item"><span class="info-label" id="out-l1">IDENTIFIER</span><div class="info-value" id="out-v1">코드네임: 러브 (LOVE)</div></div>
+                <div class="info-item"><span class="info-label" id="out-l2">DEPLOYMENT LOG</span><div class="info-value" id="out-v2">페어링 이력 있음</div></div>
+                <div class="info-item">
+                    <span class="info-label">AUDIO / BEHAVIOR LOG</span>
+                    <div class="quote-log" id="out-q1">&ldquo;으응, 가만히 있을게.&rdquo;</div>
+                    <div class="quote-log" id="out-q2">&ldquo;이건 딱딱하다...&rdquo;</div>
+                </div>
+            </div>
+            <div class="hazard-notice">
+                <div class="hazard-title" id="out-ht">⚠️ CRITICAL RISK</div>
+                <div class="hazard-desc" id="out-hd">폭주 기록...</div>
+            </div>
+        </div>
+        <div class="footer-copyright">&copy; GMB NET. HUD_UI_LEVEL_7. ALL RIGHTS RESERVED.</div>
+    </div>
+</div>
+
+<script>
+    function upColor() {
+        const m = document.getElementById('color-main').value;
+        const s = document.getElementById('color-sub').value;
+        document.documentElement.style.setProperty('--main-color', m);
+        document.documentElement.style.setProperty('--sub-color', s);
+    }
+    
+    function upImg(url) { if(url) document.getElementById('out-img').src = url; }
+    function upImgFile(input) { if(input.files && input.files[0]) { const r = new FileReader(); r.onload = e => upImg(e.target.result); r.readAsDataURL(input.files[0]); } }
+
+    function upText() {
+        document.getElementById('out-tag').innerText = document.getElementById('in-tag').value;
+        document.getElementById('out-subject').innerText = document.getElementById('in-subject').value;
+        
+        // 메타 데이터 줄바꿈 처리
+        const metaVal = document.getElementById('in-meta').value.split('\n');
+        let metaHtml = '';
+        metaVal.forEach(line => {
+            const parts = line.split(' ');
+            metaHtml += `<b>${parts[0]}</b> ${parts.slice(1).join(' ')}<br>`;
+        });
+        document.getElementById('out-meta').innerHTML = metaHtml;
+
+        document.getElementById('out-rank').innerText = document.getElementById('in-rank').value;
+        document.getElementById('out-l1').innerText = document.getElementById('in-l1').value;
+        document.getElementById('out-v1').innerText = document.getElementById('in-v1').value;
+        document.getElementById('out-l2').innerText = document.getElementById('in-l2').value;
+        document.getElementById('out-v2').innerText = document.getElementById('in-v2').value;
+        document.getElementById('out-q1').innerText = document.getElementById('in-q1').value;
+        document.getElementById('out-q2').innerText = document.getElementById('in-q2').value;
+        document.getElementById('out-ht').innerText = document.getElementById('in-ht').value;
+        document.getElementById('out-hd').innerText = document.getElementById('in-hd').value;
+    }
+
+    function extractJpg() {
+        domtoimage.toJpeg(document.getElementById('hud-card'), { quality: 0.95 }).then(url => {
+            const l = document.createElement('a'); l.download = 'hud_profile.jpg'; l.href = url; l.click();
+        });
+    }
+
+    function copyCode() {
+        const clone = document.getElementById('hud-card').cloneNode(true);
+        const style = document.querySelector('style').innerHTML;
+        const final = `<div><style>${style}<\/style>${clone.outerHTML}<\/div>`;
+        navigator.clipboard.writeText(final).then(() => alert('HUD 코드가 복사되었습니다!'));
+    }
+
+    // 초기 실행
+    upText();
+</script>
+</body>
+</html>
+
