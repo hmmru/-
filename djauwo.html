@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
-        /* 편집기 레이아웃 - 보존 */
+        /* 편집기 레이아웃 */
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
         .editor-panel { width: 450px; background: #1a111a; border-right: 1px solid #3d1c2d; padding: 20px; overflow-y: auto; box-sizing: border-box; }
         .preview-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; overflow: auto; background: #000; }
@@ -20,10 +20,14 @@
         .btn-extract { width: 100%; padding: 15px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
         .btn-copy { width: 100%; padding: 10px; background: transparent; color: var(--main-color); border: 1px solid var(--main-color); border-radius: 6px; font-family: 'Rajdhani'; font-size: 12px; cursor: pointer; margin-top: 10px; }
 
-        /* 테마 변수 */
-        :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
+        /* 테마 변수 (기본값) */
+        :root { 
+            --main-color: #ff4d8d; 
+            --main-rgb: 255, 77, 141;
+            --hue-rotate: 0deg; /* 이미지 톤 조정용 */
+        }
 
-        /* [HUD 원본 디자인 코드 - HAZARD 칸 색상 연동 수정] */
+        /* [HUD 원본 디자인 코드 - HAZARD 및 이미지 필터 수정] */
         .hud-wrapper, .hud-wrapper * { box-sizing: border-box; }
         .hud-wrapper { width: 100%; max-width: 480px; background: rgba(10, 0, 10, 0.95); font-family: 'Rajdhani', sans-serif; border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); box-shadow: 0 0 20px rgba(var(--main-rgb), 0.5), inset 0 0 10px rgba(var(--main-rgb), 0.3); margin: 0 auto; position: relative; color: #fff; }
         .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
@@ -36,7 +40,10 @@
         .hud-body { padding: 24px; }
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
         .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.5); position: relative; background: #000; line-height: 0; }
-        .image-card img { width: 100%; height: auto; display: block; filter: sepia(0.5) hue-rotate(300deg) brightness(0.9); }
+        
+        /* [핵심 수정: 이미지 필터 테마 연동] */
+        .image-card img { width: 100%; height: auto; display: block; filter: sepia(1) saturate(2) hue-rotate(var(--hue-rotate)) brightness(0.8); }
+        
         .rank-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; padding: 4px 10px; font-size: 0.85rem; font-weight: 800; line-height: 1; text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); text-transform: uppercase; letter-spacing: 1px; z-index: 20; border-radius: 2px; }
         .info-section { display: grid; gap: 16px; }
         .info-item { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid rgba(var(--main-rgb), 0.3); padding-left: 12px; }
@@ -45,13 +52,13 @@
         .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); }
         .quote-label { color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; font-weight: bold; }
         
-        /* HAZARD 칸 색상 수정됨 */
-        .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(var(--main-rgb), 0.1); border: 1px solid rgba(var(--main-rgb), 0.8); border-radius: 4px; position: relative; }
+        /* [핵심 수정: HAZARD 칸 테마 연동 완료] */
+        .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(var(--main-rgb), 0.15); border: 1px solid rgba(var(--main-rgb), 0.7); border-radius: 4px; position: relative; }
         .hazard-notice::before { content: ""; position: absolute; top: 0; left: 0; width: 10px; height: 100%; background: repeating-linear-gradient(45deg, var(--main-color), var(--main-color) 5px, transparent 5px, transparent 10px); }
         .hazard-title { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; }
         .hazard-desc { font-size: 0.85rem; color: #fff; line-height: 1.5; padding-left: 20px; }
         
-        .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(var(--main-rgb), 0.5); text-transform: uppercase; }
+        .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(var(--main-rgb), 0.6); text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -59,7 +66,7 @@
 <div class="editor-panel">
     <h2>HUD_MASTER_EDITOR</h2>
     <div class="edit-group">
-        <label>TOTAL THEME COLOR</label>
+        <label>TOTAL THEME COLOR (MAIN / IMAGE TONING)</label>
         <input type="color" id="c-master" value="#ff4d8d" oninput="up()">
     </div>
     <div class="edit-group">
@@ -135,16 +142,45 @@
 
 <script>
     function upImg(input) { if(input.files && input.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById('o-img').src = e.target.result; r.readAsDataURL(input.files[0]); } }
+    
+    // RGB를 HSL로 변환해서 Hue 값을 추출하는 함수 (이미지 톤 조정용)
+    function rgbToHue(r, g, b) {
+        r /= 255, g /= 255, b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h;
+        if (max === min) h = 0;
+        else {
+            const d = max - min;
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+        return Math.round(h * 360);
+    }
+
     function hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : "255, 77, 141";
+        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : { r: 255, g: 77, b: 141 };
     }
+
     function up() {
-        const color = document.getElementById('c-master').value;
-        const rgb = hexToRgb(color);
-        document.documentElement.style.setProperty('--main-color', color);
-        document.documentElement.style.setProperty('--main-rgb', rgb);
+        const hex = document.getElementById('c-master').value;
+        const rgb = hexToRgb(hex);
+        
+        // 이미지 톤 조정을 위한 Hue 값 계산 (기본 sepia 기준 보정치 포함)
+        const hue = rgbToHue(rgb.r, rgb.g, rgb.b);
+        const hueRotate = hue - 35; // Sepia 필터의 기본 Hue 값이 약 35도이므로 이를 보정
+
+        // CSS 변수 적용
+        document.documentElement.style.setProperty('--main-color', hex);
+        document.documentElement.style.setProperty('--main-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+        document.documentElement.style.setProperty('--hue-rotate', `${hueRotate}deg`);
+
         if(document.getElementById('i-url').value) document.getElementById('o-img').src = document.getElementById('i-url').value;
+        
         document.getElementById('o-tag').innerText = document.getElementById('t-tag').value;
         document.getElementById('o-subject').innerText = document.getElementById('t-subject').value;
         const metaLines = document.getElementById('t-meta').value.split('\n');
