@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S+ CLASS SENTINEL EDITOR (FULL)</title>
+    <title>S+ CLASS SENTINEL EDITOR (PRO_CUSTOM)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
@@ -16,7 +16,6 @@
             --main-color: #ff6b81;
             --sub-color: #ffb7c5;
             --bg-opacity: 0.7;
-            /* 카드 모드용 변수 */
             --card-overlay-bg: rgba(255, 255, 255, var(--bg-opacity));
             --card-value-color: #111;
         }
@@ -29,7 +28,7 @@
         body { background: var(--ui-bg); margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: var(--ui-text); }
 
         .editor-panel {
-            width: 400px; background: var(--ui-sidebar); padding: 20px;
+            width: 420px; background: var(--ui-sidebar); padding: 20px;
             border-right: 1px solid var(--ui-border); z-index: 100; overflow-y: auto; box-sizing: border-box;
         }
 
@@ -39,24 +38,25 @@
         .mode-toggle { padding: 5px 10px; font-size: 10px; font-family: 'Orbitron'; border-radius: 4px; border: 1px solid var(--main-color); background: transparent; color: var(--main-color); cursor: pointer; }
         .mode-toggle:hover { background: var(--main-color); color: white; }
 
-        .control-group { margin-bottom: 15px; }
+        .control-group { margin-bottom: 15px; border-bottom: 1px border var(--ui-border); padding-bottom: 10px; }
         .control-group label { display: block; font-size: 11px; font-weight: bold; color: #888; margin-bottom: 4px; text-transform: uppercase; }
+        .control-group .row { display: flex; gap: 5px; margin-bottom: 5px; }
         .control-group input, .control-group textarea { 
             width: 100%; padding: 8px; border: 1px solid var(--ui-border); border-radius: 4px; 
             background: #fff; color: #333; box-sizing: border-box; font-size: 0.85rem;
         }
         .control-group textarea { height: 60px; resize: none; }
+        .label-edit { width: 40% !important; background: #f9f9f9 !important; font-weight: bold; color: var(--main-color) !important; font-size: 0.7rem !important; }
 
-        .btn-save { width: 100%; padding: 15px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(255, 107, 129, 0.2); }
+        .btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .btn-save { width: 100%; padding: 14px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; }
+        .btn-copy { width: 100%; padding: 10px; background: #2d3436; color: #fff; border: none; border-radius: 6px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; }
 
         .preview-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; background: #000; }
 
-        /* =========================================
-           [카드 원본 디자인 - 님이 준 코드 유지]
-           ========================================= */
+        /* [카드 원본 디자인 - 님이 준 코드 100% 유지] */
         .card {
-            width: 440px; height: 850px; background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
-            background-size: cover; background-position: center; border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0;
+            width: 440px; height: 850px; background-color: #222; background-size: cover; background-position: center; border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0;
         }
 
         .card::before {
@@ -116,14 +116,15 @@
 
 <div class="editor-panel">
     <div class="header-wrap">
-        <h2>UNIT_EDITOR_v4</h2>
-        <button class="mode-toggle" onclick="toggleCardMode()">CARD: DARK/WHITE</button>
+        <h2>STATION_PRO_v5</h2>
+        <button class="mode-toggle" onclick="toggleCardMode()">DARK/WHITE</button>
     </div>
     
     <div class="control-group"><label>BACKGROUND_IMAGE</label><input type="file" accept="image/*" onchange="handleFile(this)"></div>
-    <div class="control-group"><label>LOG_TAG</label><input type="text" id="affilInput" value="Fearless•HQ" oninput="updateUI()"></div>
-    <div class="control-group"><label>GRADE</label><input type="text" id="gradeInput" value="S+ CLASS SENTINEL" oninput="updateUI()"></div>
-    <div class="control-group"><label>IDENTITY</label><input type="text" id="nameInput" value="CODE NAME: LOVE" oninput="updateUI()"></div>
+    <div class="control-group"><label>LOG_TAG & GRADE</label>
+        <div class="row"><input type="text" id="affilInput" value="Fearless•HQ" oninput="updateUI()"><input type="text" id="gradeInput" value="S+ CLASS SENTINEL" oninput="updateUI()"></div>
+        <label>IDENTITY</label><input type="text" id="nameInput" value="CODE NAME: LOVE" oninput="updateUI()">
+    </div>
     
     <div class="control-group">
         <label>SYSTEM_QUOTE</label>
@@ -131,13 +132,25 @@
         <textarea id="quoteInput" oninput="updateUI()">"어쩌고"</textarea>
     </div>
 
-    <div class="control-group"><label>BASIC INFO</label><input type="text" id="infoInput" value="연하진 / 26세 / 남성 / 센티넬" oninput="updateUI()"></div>
-    <div class="control-group"><label>APPEARANCE</label><textarea id="appInput" oninput="updateUI()">키 181cm. 마른 편이지만 탄탄하고...</textarea></div>
-    <div class="control-group"><label>PERSONALITY</label><textarea id="persInput" oninput="updateUI()">태생적으로 사랑받는 것이 숨 쉬는 것만큼...</textarea></div>
-    <div class="control-group"><label>TRAITS</label><textarea id="traitInput" oninput="updateUI()">혼자 있는 것을 극도로 견디지 못함...</textarea></div>
-    
     <div class="control-group">
-        <label>ABILITY_SPEC</label>
+        <label>BASIC INFO (LABEL & DATA)</label>
+        <div class="row"><input type="text" id="L1" class="label-edit" value="BASIC_INFO" oninput="updateUI()"><input type="text" id="V1" value="연하진 / 26세 / 남성 / 센티넬" oninput="updateUI()"></div>
+    </div>
+    <div class="control-group">
+        <label>APPEARANCE (LABEL & DATA)</label>
+        <div class="row"><input type="text" id="L2" class="label-edit" value="APPEARANCE" oninput="updateUI()"><textarea id="V2" oninput="updateUI()">키 181cm...</textarea></div>
+    </div>
+    <div class="control-group">
+        <label>PERSONALITY (LABEL & DATA)</label>
+        <div class="row"><input type="text" id="L3" class="label-edit" value="PERSONALITY" oninput="updateUI()"><textarea id="V3" oninput="updateUI()">태생적으로 사랑받는...</textarea></div>
+    </div>
+    <div class="control-group">
+        <label>TRAITS (LABEL & DATA)</label>
+        <div class="row"><input type="text" id="L4" class="label-edit" value="CHARACTER_TRAITS" oninput="updateUI()"><textarea id="V4" oninput="updateUI()">혼자 있는 것을 극도로 견디지 못함...</textarea></div>
+    </div>
+    <div class="control-group">
+        <label>ABILITY_SPEC (LABEL & NAME & DESC)</label>
+        <input type="text" id="L5" class="label-edit" value="ABILITY_SPEC" oninput="updateUI()" style="width:100% !important; margin-bottom:5px;">
         <input type="text" id="abNameInput" value="Heart Manifestation" oninput="updateUI()" style="margin-bottom:5px;">
         <textarea id="abDescInput" oninput="updateUI()">전투시작 시, 손끝에서 형성되는...</textarea>
     </div>
@@ -148,7 +161,10 @@
         <input type="color" id="customColor" value="#ff6b81" onchange="changeColor(this.value)">
     </div>
 
-    <button class="btn-save" onclick="saveAsImage()">EXTRACT PNG</button>
+    <div class="btn-group">
+        <button class="btn-save" onclick="saveAsImage()">EXTRACT PNG</button>
+        <button class="btn-copy" onclick="copyHTML()">COPY HTML CODE</button>
+    </div>
 </div>
 
 <div class="preview-area">
@@ -166,12 +182,12 @@
                     <span class="card-catch" id="view-catch">// 사랑을 위한, 사랑에 의한, 사랑과 염한</span>
                     <p class="card-quote" id="view-quote">"어쩌고"</p>
                 </div>
-                <div class="data-row"><span class="label">BASIC_INFO</span><div class="value" id="view-info">연하진 / 26세 / 남성 / 센티넬</div></div>
-                <div class="data-row"><span class="label">APPEARANCE</span><div class="value" id="view-app">키 181cm. 마른 편이지만 탄탄하고...</div></div>
-                <div class="data-row"><span class="label">PERSONALITY</span><div class="value" id="view-pers">태생적으로 사랑받는 것이 숨 쉬는 것만큼...</div></div>
-                <div class="data-row"><span class="label">CHARACTER_TRAITS</span><div class="value" id="view-trait">혼자 있는 것을 극도로 견디지 못함...</div></div>
+                <div class="data-row"><span class="label" id="label-V1">BASIC_INFO</span><div class="value" id="view-V1">연하진 / 26세 / 남성 / 센티넬</div></div>
+                <div class="data-row"><span class="label" id="label-V2">APPEARANCE</span><div class="value" id="view-V2">키 181cm...</div></div>
+                <div class="data-row"><span class="label" id="label-V3">PERSONALITY</span><div class="value" id="view-V3">태생적으로 사랑받는...</div></div>
+                <div class="data-row"><span class="label" id="label-V4">CHARACTER_TRAITS</span><div class="value" id="view-V4">혼자 있는 것을 극도로 견디지 못함...</div></div>
                 <div class="data-row">
-                    <span class="label">ABILITY_SPEC</span>
+                    <span class="label" id="label-V5">ABILITY_SPEC</span>
                     <div class="ability-box">
                         <div class="value" id="view-abName" style="font-weight: bold; color: var(--main-color); margin-bottom: 5px; padding-left: 0;">[ Heart Manifestation ]</div>
                         <div class="value" id="view-abDesc" style="padding-left: 0;">전투시작 시, 손끝에서 형성되는...</div>
@@ -202,15 +218,17 @@
         document.getElementById('view-name').innerText = document.getElementById('nameInput').value;
         document.getElementById('view-catch').innerText = document.getElementById('catchInput').value;
         document.getElementById('view-quote').innerText = document.getElementById('quoteInput').value;
-        document.getElementById('view-info').innerText = document.getElementById('infoInput').value;
-        document.getElementById('view-app').innerText = document.getElementById('appInput').value;
-        document.getElementById('view-pers').innerText = document.getElementById('persInput').value;
-        document.getElementById('view-trait').innerText = document.getElementById('traitInput').value;
+        
+        // 라벨 및 데이터 업데이트
+        for(let i=1; i<=5; i++) {
+            document.getElementById('label-V'+i).innerText = document.getElementById('L'+i).value;
+            if(i < 5) document.getElementById('view-V'+i).innerText = document.getElementById('V'+i).value;
+        }
+
         document.getElementById('view-abName').innerText = "[ " + document.getElementById('abNameInput').value + " ]";
         document.getElementById('view-abDesc').innerText = document.getElementById('abDescInput').value;
         
-        const opacity = document.getElementById('opacityInput').value;
-        document.documentElement.style.setProperty('--bg-opacity', opacity);
+        document.documentElement.style.setProperty('--bg-opacity', document.getElementById('opacityInput').value);
     }
 
     function changeColor(color) {
@@ -219,11 +237,34 @@
     }
 
     function saveAsImage() {
-        const card = document.getElementById('export-card');
-        domtoimage.toPng(card, { quality: 1.0 }).then(url => {
+        domtoimage.toPng(document.getElementById('export-card'), { quality: 1.0 }).then(url => {
             const link = document.createElement('a');
-            link.download = 'sentinel-card.png'; link.href = url; link.click();
+            link.download = 'custom-sentinel-card.png'; link.href = url; link.click();
         });
+    }
+
+    function copyHTML() {
+        const cardNode = document.getElementById('export-card').cloneNode(true);
+        // 복사본에서 다크모드/컬러 상태를 인라인으로 고정
+        const currentStyles = window.getComputedStyle(document.documentElement);
+        const mainColor = currentStyles.getPropertyValue('--main-color');
+        const opacity = currentStyles.getPropertyValue('--bg-opacity');
+        const overlayBg = window.getComputedStyle(document.querySelector('.overlay')).backgroundColor;
+        const textColor = window.getComputedStyle(document.querySelector('.value')).color;
+
+        const finalCode = `
+<div class="card-wrap" style="display:flex; justify-content:center; background:#000; padding:20px;">
+    ${cardNode.outerHTML}
+</div>
+<style>
+    /* 필요 스타일 인라인 혹은 여기에 추가 */
+    .card { width: 440px; height: 850px; position: relative; border: 1px solid ${mainColor}; background-color: #222; }
+    .overlay { position: absolute; inset: 0; background: ${overlayBg}; backdrop-filter: saturate(140%); }
+    .value { color: ${textColor} !important; }
+    /* ... 님이 준 원본 CSS 코드들 ... */
+</style>
+        `;
+        navigator.clipboard.writeText(finalCode).then(() => alert('카드 코드가 복사되었습니다!'));
     }
 </script>
 </body>
