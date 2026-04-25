@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SENTINEL CARD EDITOR (OPACITY CONTROL)</title>
+    <title>SENTINEL CARD EDITOR FINAL</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
@@ -14,14 +14,14 @@
         .edit-group { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333; }
         .edit-group label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; font-family: 'Orbitron'; }
         .edit-group input, .edit-group textarea { width: 100%; background: #333; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box; }
-        .edit-group input[type="range"] { padding: 0; cursor: pointer; } /* 슬라이더 전용 */
+        .edit-group input[type="range"] { padding: 0; cursor: pointer; }
         .edit-group textarea { height: 80px; resize: none; }
         .row { display: flex; gap: 5px; }
         .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; }
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-mode { background: #444; color: #fff; margin-bottom: 10px; }
 
-        /* [카드 원본 스타일] */
+        /* [카드 원본 디자인 - 100% 보존] */
         :root { 
             --bg-opacity: 0.7; 
             --main-color: #ff6b81; 
@@ -29,25 +29,15 @@
             --card-overlay: rgba(255, 255, 255, var(--bg-opacity)); 
             --card-text: #111; 
         }
-        
-        .card.dark-mode { 
-            --card-overlay: rgba(0, 0, 0, var(--bg-opacity)); 
-            --card-text: #eee; 
-        }
+        .card.dark-mode { --card-overlay: rgba(0, 0, 0, var(--bg-opacity)); --card-text: #eee; }
 
         .card { 
             width: 440px; height: 850px; flex-shrink: 0; 
             background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D'); 
-            background-size: cover; background-position: center; 
-            border: 1px solid var(--main-color); position: relative; overflow: hidden; 
-            display: flex; flex-direction: column; font-family: 'Noto Sans KR', sans-serif; 
-            box-sizing: border-box; outline: none;
+            background-size: cover; background-position: center; border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column; font-family: 'Noto Sans KR', sans-serif; box-sizing: border-box; outline: none;
         }
-        
         .card::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(var(--main-rgb), 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--main-rgb), 0.05) 1px, transparent 1px); background-size: 20px 20px; z-index: 0; }
-        
         .overlay { position: absolute; inset: 0; background: var(--card-overlay); display: flex; flex-direction: column; backdrop-filter: saturate(140%); z-index: 1; }
-        
         .overlay::before, .overlay::after, .card::after { content: ''; position: absolute; width: 15px; height: 15px; border: 2px solid var(--main-color); z-index: 10; pointer-events: none; }
         .overlay::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
         .overlay::after { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
@@ -57,26 +47,23 @@
         .sys-log { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--main-color); letter-spacing: 2px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .sys-load-bar { width: 60px; height: 2px; background: rgba(var(--main-rgb), 0.15); position: relative; overflow: hidden; }
         .sys-load-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--main-color); box-shadow: 0 0 8px var(--main-color); animation: loading 2s infinite ease-in-out; }
-        
-        .title-box { display: flex; flex-direction: column; gap: 0 !important; }
         .grade { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; color: var(--main-color); font-weight: 800; letter-spacing: 1px; line-height: 1; white-space: nowrap; }
         .code-name-wrap { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; color: var(--main-color); font-weight: 900; line-height: 1.1; word-break: break-all; margin-top: 4px; }
-        
+
         main { flex: 1; padding: 25px 30px; overflow-y: auto; background-image: repeating-linear-gradient(0deg, rgba(var(--main-rgb), 0.02) 0px, rgba(var(--main-rgb), 0.02) 1px, transparent 1px, transparent 3px); }
         .quote-card-unit { margin-bottom: 30px; position: relative; padding: 18px 20px; background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); }
         .quote-card-unit::before, .quote-card-unit::after { content: ''; position: absolute; width: 8px; height: 8px; border: 2px solid var(--main-color); }
         .quote-card-unit::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
         .quote-card-unit::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
-        
         .card-catch { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 1px; opacity: 0.7; }
         .card-quote { font-size: 0.95rem; color: var(--main-color); font-weight: 700; line-height: 1.5; word-break: keep-all; }
-        
+
         .data-row { margin-bottom: 25px; }
         .label { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--main-color); font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
         .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
         .value { font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; font-size: 0.92rem; color: var(--card-text); line-height: 1.8; padding-left: 8px; word-break: keep-all; text-align: justify; }
-        
+
         .ability-box { background: rgba(var(--main-rgb), 0.08); border: 1px solid var(--main-color); padding: 18px; margin-top: 8px; position: relative; }
         .ability-box-tag { position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; white-space: nowrap; }
 
@@ -91,51 +78,43 @@
 
 <div class="editor-side">
     <h2 style="font-family: 'Orbitron'; color: var(--main-color); margin-bottom: 20px;">STATION CONTROL</h2>
-    
     <button class="btn btn-mode" onclick="toggleTheme()">SWITCH LIGHT/DARK OVERLAY</button>
 
     <div class="edit-group">
-        <label>OVERLAY OPACITY (0.0 - 1.0)</label>
+        <label>OVERLAY OPACITY</label>
         <input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7" oninput="up()">
     </div>
-
     <div class="edit-group">
         <label>MASTER THEME COLOR</label>
         <input type="color" id="c-master" value="#ff6b81" oninput="up()">
     </div>
-
     <div class="edit-group">
-        <label>BACKGROUND (URL / FILE)</label>
+        <label>BACKGROUND</label>
         <input type="text" id="bg-url" placeholder="URL..." oninput="upBg(this.value)" style="margin-bottom:5px">
         <input type="file" id="bg-file" accept="image/*" onchange="upFile(this)">
     </div>
-
     <div class="edit-group">
         <label>IDENTITY</label>
         <div class="row"><input type="text" id="in-tag" value="Fearless•HQ" oninput="up()"><input type="text" id="in-grade" value="S+ CLASS SENTINEL" oninput="up()"></div>
         <input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()" style="margin-top:5px">
     </div>
-
     <div class="edit-group">
         <label>SYSTEM QUOTE</label>
         <input type="text" id="in-catch" value="// 사랑을 위한, 사랑에 의한, 사랑과 염한" oninput="up()">
-        <textarea id="in-quote" oninput="up()">"나의 심장을 찢어 발겨도 좋아, 그 안에 네가 있다면."</textarea>
+        <textarea id="in-quote" oninput="up()">"어쩌고"</textarea>
     </div>
-
     <div class="edit-group">
         <label>DATA SECTIONS</label>
         <div class="row"><input type="text" id="l-1" value="BASIC_INFO" oninput="up()"><input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬" oninput="up()"></div>
         <input type="text" id="l-2" value="APPEARANCE" oninput="up()"><textarea id="v-2" oninput="up()" style="margin-top:5px">키 181cm...</textarea>
-        <input type="text" id="l-3" value="PERSONALITY" oninput="up()"><textarea id="v-3" oninput="up()" style="margin-top:5px">태생적으로 서늘한 분위기를 지녔으나...</textarea>
-        <input type="text" id="l-4" value="CHARACTER_TRAITS" oninput="up()"><textarea id="v-4" oninput="up()" style="margin-top:5px">타인의 온기에 비정상적으로 집착함.</textarea>
+        <input type="text" id="l-3" value="PERSONALITY" oninput="up()"><textarea id="v-3" oninput="up()" style="margin-top:5px">태생적으로...</textarea>
+        <input type="text" id="l-4" value="CHARACTER_TRAITS" oninput="up()"><textarea id="v-4" oninput="up()" style="margin-top:5px">혼자 있는 것을...</textarea>
     </div>
-
     <div class="edit-group">
         <label>ABILITY & TAG</label>
-        <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()"><input type="text" id="v-5-n" value="Heart Manifestation" oninput="up()" style="font-weight:bold; margin-top:5px;"><textarea id="v-5-d" oninput="up()" style="margin-top:5px">심장의 고동을 증폭시켜 광역 압박 필드를 생성함.</textarea>
+        <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()"><input type="text" id="v-5-n" value="Heart Manifestation" oninput="up()" style="font-weight:bold; margin-top:5px;"><textarea id="v-5-d" oninput="up()" style="margin-top:5px">전투시작 시...</textarea>
         <input type="text" id="in-power-tag" value="POWER_DATA" oninput="up()" style="margin-top:10px">
     </div>
-
     <button class="btn btn-save" onclick="downHighRes()">EXTRACT HI-RES JPG</button>
 </div>
 
@@ -143,10 +122,10 @@
     <div class="card" id="card">
         <div class="overlay">
             <header>
-                <div class="sys-log"><span id="out-tag">Fearless&bull;HQ</span><div class="sys-load-bar"></div></div>
+                <div class="sys-log"><span id="out-tag"></span><div class="sys-load-bar"></div></div>
                 <div class="title-box">
-                    <span class="grade" id="out-grade">S+ CLASS SENTINEL</span>
-                    <h1 class="code-name-wrap" id="out-name">CODE NAME: LOVE</h1>
+                    <span class="grade" id="out-grade"></span>
+                    <h1 class="code-name-wrap" id="out-name"></h1>
                 </div>
             </header>
             <main>
@@ -170,20 +149,16 @@
     function toggleTheme() { document.getElementById('card').classList.toggle('dark-mode'); }
     function upBg(url) { if(url) document.getElementById('card').style.backgroundImage = `url('${url}')`; }
     function upFile(input) { if(input.files && input.files[0]) { const r = new FileReader(); r.onload = e => upBg(e.target.result); r.readAsDataURL(input.files[0]); } }
-    
     function hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : "255, 107, 129";
     }
-
     function up() {
         const color = document.getElementById('c-master').value;
         const opacity = document.getElementById('c-opacity').value;
-        
         document.documentElement.style.setProperty('--main-color', color);
         document.documentElement.style.setProperty('--main-rgb', hexToRgb(color));
-        document.documentElement.style.setProperty('--bg-opacity', opacity); // 오퍼시티 업데이트
-        
+        document.documentElement.style.setProperty('--bg-opacity', opacity);
         document.getElementById('out-tag').innerText = document.getElementById('in-tag').value;
         document.getElementById('out-grade').innerText = document.getElementById('in-grade').value;
         document.getElementById('out-name').innerText = document.getElementById('in-name').value;
@@ -197,18 +172,12 @@
         document.getElementById('ov-5-d').innerText = document.getElementById('v-5-d').value;
         document.getElementById('out-power-tag').innerText = document.getElementById('in-power-tag').value;
     }
-
     async function downHighRes() {
         const card = document.getElementById('card');
         await document.fonts.ready;
-        html2canvas(card, {
-            scale: 3,
-            useCORS: true,
-            backgroundColor: "#000",
-            logging: false
-        }).then(canvas => {
+        html2canvas(card, { scale: 3, useCORS: true, backgroundColor: "#000", logging: false }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'sentinel_card_custom.jpg';
+            link.download = 'sentinel_card_hires.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
@@ -217,3 +186,4 @@
 </script>
 </body>
 </html>
+
