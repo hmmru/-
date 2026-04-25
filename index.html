@@ -17,13 +17,12 @@
         .edit-group input[type="range"] { padding: 0; cursor: pointer; }
         .edit-group textarea { height: 80px; resize: none; }
         .row { display: flex; gap: 5px; }
-        .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; transition: 0.2s; }
+        .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; }
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
-        .btn-copy { background: #555; color: #fff; margin-top: 5px; }
-        .btn-copy:hover { background: #777; }
+        .btn-copy { background: #444; color: #fff; } /* HTML 복사 버튼 추가 */
         .btn-mode { background: #444; color: #fff; margin-bottom: 10px; }
 
-        /* [카드 원본 디자인 - 보존 및 텍스트 수정] */
+        /* [카드 원본 디자인] */
         :root { 
             --bg-opacity: 0.7; 
             --main-color: #ff6b81; 
@@ -65,7 +64,7 @@
         .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
         
-        /* 본문 폰트 스타일 수정: 자간 줄이고 행간 넓힘 */
+        /* 본문 글씨체 행간(line-height) 및 자간(letter-spacing) 수정 */
         .value { 
             font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; 
             font-size: 0.92rem; 
@@ -76,9 +75,6 @@
             word-break: keep-all; 
             text-align: justify; 
         }
-
-        .ability-box { background: rgba(var(--main-rgb), 0.08); border: 1px solid var(--main-color); padding: 18px; margin-top: 8px; position: relative; }
-        .ability-box-tag { position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; white-space: nowrap; }
 
         footer { padding: 15px 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; background: rgba(var(--main-rgb), 0.05); }
         .sys-beat { width: 4px; height: 4px; background: var(--main-color); animation: blink 1s infinite steps(1); }
@@ -114,13 +110,13 @@
     <div class="edit-group">
         <label>SYSTEM QUOTE</label>
         <input type="text" id="in-catch" value="// 사랑을 위한, 사랑에 의한, 사랑과 염한" oninput="up()">
-        <textarea id="in-quote" oninput="up()">"우리가 함께하는 이 순간이 가장 완벽한 데이터다."</textarea>
+        <textarea id="in-quote" oninput="up()">"어쩌고"</textarea>
     </div>
     <div class="edit-group">
         <label>DATA SECTIONS</label>
-        <div class="row"><input type="text" id="l-1" value="BASIC_INFO" oninput="up()"><input type="text" id="v-1" value="연하진•26세•남성 " oninput="up()"></div>
-        <input type="text" id="l-2" value="APPEARANCE" oninput="up()"><textarea id="v-2" oninput="up()" style="margin-top:5px"> 어쩌고..</textarea>
-        <input type="text" id="l-3" value="PERSONALITY" oninput="up()"><textarea id="v-3" oninput="up()" style="margin-top:5px">저쩌고.. </textarea>
+        <div class="row"><input type="text" id="l-1" value="BASIC_INFO" oninput="up()"><input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬" oninput="up()"></div>
+        <input type="text" id="l-2" value="APPEARANCE" oninput="up()"><textarea id="v-2" oninput="up()" style="margin-top:5px">키 181cm...</textarea>
+        <input type="text" id="l-3" value="PERSONALITY" oninput="up()"><textarea id="v-3" oninput="up()" style="margin-top:5px">태생적으로...</textarea>
     </div>
 
     <button class="btn btn-save" onclick="saveImage()">EXPORT IMAGE (.PNG)</button>
@@ -141,19 +137,19 @@
             <main>
                 <div class="quote-card-unit">
                     <span class="card-catch" id="out-catch">// 사랑을 위한, 사랑에 의한, 사랑과 염한</span>
-                    <div class="card-quote" id="out-quote">"대사"</div>
+                    <div class="card-quote" id="out-quote">"어쩌고"</div>
                 </div>
                 <div class="data-row">
                     <div class="label" id="out-l1">BASIC_INFO</div>
-                    <div class="value" id="out-v1">연하진•26세•남성 </div>
+                    <div class="value" id="out-v1">연하진 / 26세 / 남성 / 센티넬</div>
                 </div>
                 <div class="data-row">
                     <div class="label" id="out-l2">APPEARANCE</div>
-                    <div class="value" id="out-v2">어쩌고..</div>
+                    <div class="value" id="out-v2">키 181cm...</div>
                 </div>
                 <div class="data-row">
                     <div class="label" id="out-l3">PERSONALITY</div>
-                    <div class="value" id="out-v3">저쩌고..</div>
+                    <div class="value" id="out-v3">태생적으로...</div>
                 </div>
             </main>
             <footer>
@@ -179,7 +175,6 @@
         const root = document.documentElement;
         const master = document.getElementById('c-master').value;
         const opacity = document.getElementById('c-opacity').value;
-        
         root.style.setProperty('--main-color', master);
         root.style.setProperty('--main-rgb', hexToRgb(master));
         root.style.setProperty('--bg-opacity', opacity);
@@ -217,26 +212,12 @@
         });
     }
 
-    // HTML 복사 기능
     function copyHTML() {
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleContent = document.querySelector('style').innerHTML;
-        // 카드에 적용된 현재 CSS 변수 상태를 추출하여 포함
-        const computedStyles = `
-<style>
-:root {
-    --main-color: ${getComputedStyle(document.documentElement).getPropertyValue('--main-color')};
-    --main-rgb: ${getComputedStyle(document.documentElement).getPropertyValue('--main-rgb')};
-    --bg-opacity: ${getComputedStyle(document.documentElement).getPropertyValue('--bg-opacity')};
-}
-${styleContent}
-</style>`;
-        const fullCode = computedStyles + "\n" + cardHTML;
-        
+        const fullCode = `<style>${styleContent}</style>\n${cardHTML}`;
         navigator.clipboard.writeText(fullCode).then(() => {
-            alert("HTML 코드가 클립보드에 복사되었습니다.");
-        }).catch(err => {
-            console.error('복사 실패:', err);
+            alert("카드 HTML 코드가 클립보드에 복사되었습니다.");
         });
     }
 </script>
