@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD PROJECT EDITOR</title>
+    <title>HUD EDITOR (FIXED DESIGN)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
-        /* 편집기 레이아웃 - 보존 */
+        /* 편집기 레이아웃 - 원본 디자인 보존을 위해 별도 분리 */
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
         .editor-panel { width: 450px; background: #1a111a; border-right: 1px solid #3d1c2d; padding: 20px; overflow-y: auto; box-sizing: border-box; }
         .preview-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; overflow: auto; background: #000; }
-        .editor-panel h2 { font-family: 'Rajdhani'; color: #ff4d8d; font-size: 1.2rem; margin-bottom: 20px; border-bottom: 2px solid #ff4d8d; padding-bottom: 10px; }
+        .editor-panel h2 { font-family: 'Rajdhani'; color: var(--main-color, #ff4d8d); font-size: 1.2rem; margin-bottom: 20px; border-bottom: 2px solid var(--main-color, #ff4d8d); padding-bottom: 10px; }
         .edit-group { margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px solid #2a1a2a; }
-        .edit-group label { display: block; font-size: 11px; color: #ff4d8d; font-family: 'Share Tech Mono'; margin-bottom: 6px; letter-spacing: 1px; }
+        .edit-group label { display: block; font-size: 11px; color: var(--main-color, #ff4d8d); font-family: 'Share Tech Mono'; margin-bottom: 6px; letter-spacing: 1px; }
         .edit-group input, .edit-group textarea { width: 100%; background: #2a1a2a; border: 1px solid #4a2a3a; color: #fff; padding: 10px; border-radius: 4px; font-size: 13px; box-sizing: border-box; font-family: 'Noto Sans KR'; }
         .edit-group textarea { height: 60px; resize: none; }
         .row { display: flex; gap: 8px; margin-bottom: 5px; }
-        .btn-extract { width: 100%; padding: 15px; background: #ff4d8d; color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .btn-copy { width: 100%; padding: 10px; background: transparent; color: #ff4d8d; border: 1px solid #ff4d8d; border-radius: 6px; font-family: 'Rajdhani'; font-size: 12px; cursor: pointer; margin-top: 10px; }
+        .btn-extract { width: 100%; padding: 15px; background: var(--main-color, #ff4d8d); color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .btn-copy { width: 100%; padding: 10px; background: transparent; color: var(--main-color, #ff4d8d); border: 1px solid var(--main-color, #ff4d8d); border-radius: 6px; font-family: 'Rajdhani'; font-size: 12px; cursor: pointer; margin-top: 10px; }
 
-        :root { --main-color: #ff4d8d; --sub-color: #ffb3d1; }
+        /* [핵심: 모든 포인트 컬러를 변수로 통일] */
+        :root { 
+            --main-color: #ff4d8d; 
+            --sub-color: #ffb3d1; 
+        }
 
-        /* [카드 원본 스타일 - 보존] */
+        /* [HUD 원본 디자인 코드 - 절대 보존] */
         .hud-wrapper, .hud-wrapper * { box-sizing: border-box; }
-        .hud-wrapper { width: 100%; max-width: 480px; background: rgba(10, 0, 10, 0.95); font-family: 'Rajdhani', sans-serif; border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); box-shadow: 0 0 20px rgba(255, 77, 141, 0.5), inset 0 0 10px rgba(255, 77, 141, 0.3); margin: 0 auto; position: relative; color: var(--sub-color); }
-        .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(255, 77, 141, 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
-        .hud-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(255, 77, 141, 0.5); position: relative; }
+        .hud-wrapper { width: 100%; max-width: 480px; background: rgba(10, 0, 10, 0.95); font-family: 'Rajdhani', sans-serif; border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); box-shadow: 0 0 20px rgba(var(--main-rgb), 0.5), inset 0 0 10px rgba(var(--main-rgb), 0.3); margin: 0 auto; position: relative; color: var(--sub-color); }
+        .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
+        .hud-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(var(--main-rgb), 0.5); position: relative; }
         .hud-header::after { content: ""; position: absolute; top: -2px; right: -2px; width: 30px; height: 30px; border-top: 4px solid var(--main-color); border-right: 4px solid var(--main-color); }
         .category-tag { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--main-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
         .subject { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
@@ -34,42 +38,41 @@
         .meta-container b { color: #fff; text-transform: uppercase; }
         .hud-body { padding: 24px; }
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
-        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255, 77, 141, 0.5); position: relative; background: #000; line-height: 0; }
+        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.5); position: relative; background: #000; line-height: 0; }
         .image-card img { width: 100%; height: auto; display: block; filter: sepia(0.5) hue-rotate(300deg) brightness(0.9); }
         .rank-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; padding: 4px 10px; font-size: 0.85rem; font-weight: 800; line-height: 1; text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); text-transform: uppercase; letter-spacing: 1px; z-index: 20; border-radius: 2px; }
         .info-section { display: grid; gap: 16px; }
-        .info-item { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid rgba(255, 77, 141, 0.3); padding-left: 12px; }
+        .info-item { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid rgba(var(--main-rgb), 0.3); padding-left: 12px; }
         .info-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--main-color); text-transform: uppercase; }
         .info-value { font-size: 0.95rem; color: #ffffff; }
-        
-        .quote-log { background: rgba(255, 77, 141, 0.05); border: 1px solid rgba(255, 77, 141, 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: var(--sub-color); }
+        .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: var(--sub-color); }
         .quote-label { color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; font-weight: bold; }
-        
-        .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(255, 0, 0, 0.1); border: 1px solid rgba(255, 77, 141, 0.8); border-radius: 4px; position: relative; }
+        .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(255, 0, 0, 0.1); border: 1px solid rgba(var(--main-rgb), 0.8); border-radius: 4px; position: relative; }
         .hazard-notice::before { content: ""; position: absolute; top: 0; left: 0; width: 10px; height: 100%; background: repeating-linear-gradient(45deg, var(--main-color), var(--main-color) 5px, #0a000a 5px, #0a000a 10px); }
         .hazard-title { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; }
         .hazard-desc { font-size: 0.85rem; color: #fff; line-height: 1.5; padding-left: 20px; }
-        .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(255, 179, 209, 0.5); text-transform: uppercase; }
+        .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(var(--sub-rgb), 0.5); text-transform: uppercase; }
     </style>
 </head>
 <body>
 
 <div class="editor-panel">
-    <h2>HUD_ADVANCED_CONTROL</h2>
+    <h2>HUD_MASTER_EDITOR</h2>
     
     <div class="edit-group">
-        <label>THEME COLOR</label>
-        <div class="row"><input type="color" id="c-main" value="#ff4d8d" oninput="up()"><input type="color" id="c-sub" value="#ffb3d1" oninput="up()"></div>
+        <label>TOTAL POINT COLOR (ALL ELEMENTS)</label>
+        <input type="color" id="c-master" value="#ff4d8d" oninput="up()">
+        <p style="font-size: 10px; color: #888; margin-top: 5px;">* 테두리, 라벨, 강조색 등 모든 포인트가 변경됩니다.</p>
     </div>
 
     <div class="edit-group">
         <label>IMAGE SETTING</label>
-        <input type="text" id="i-url" placeholder="URL..." oninput="up()" style="margin-bottom:5px">
-        <input type="file" accept="image/*" onchange="upImg(this)">
+        <input type="text" id="i-url" placeholder="이미지 URL 주소..." oninput="up()">
+        <input type="file" accept="image/*" onchange="upImg(this)" style="margin-top:5px">
     </div>
 
     <div class="edit-group">
-        <label>HEADER & META</label>
+        <label>HEADER TEXTS</label>
         <input type="text" id="t-tag" value="addressee::GREMORY" oninput="up()">
         <input type="text" id="t-subject" value="[배정알림] SENTINEL-FILE: 러브" oninput="up()" style="margin-top:5px">
         <textarea id="t-meta" oninput="up()" style="margin-top:5px">발신 K (k@fearless.com)
@@ -78,21 +81,21 @@
     </div>
 
     <div class="edit-group">
-        <label>RANK & MAIN INFO</label>
+        <label>MAIN INFO & RANK</label>
         <input type="text" id="t-rank" value="S+ CLASS" oninput="up()" style="margin-bottom:5px">
         <div class="row"><input type="text" id="t-l1" value="IDENTIFIER" oninput="up()"><input type="text" id="t-v1" value="코드네임: 러브 (LOVE)" oninput="up()"></div>
         <div class="row"><input type="text" id="t-l2" value="DEPLOYMENT LOG" oninput="up()"><input type="text" id="t-v2" value="페어링 이력 있음" oninput="up()"></div>
     </div>
 
     <div class="edit-group">
-        <label>AUDIO LOG 1</label>
-        <input type="text" id="t-qlab1" value="AUDIO_LOG >" oninput="up()" style="margin-bottom:5px; font-weight:bold; color:#ff4d8d;">
+        <label>LOG 1 (LABEL & TEXT)</label>
+        <input type="text" id="t-qlab1" value="AUDIO_LOG >" oninput="up()" style="margin-bottom:5px; font-weight:bold;">
         <textarea id="t-q1" oninput="up()">“으응, 가만히 있을게. 강아지는 나한테만 집중해요.”</textarea>
     </div>
 
     <div class="edit-group">
-        <label>AUDIO LOG 2</label>
-        <input type="text" id="t-qlab2" value="AUDIO_LOG >" oninput="up()" style="margin-bottom:5px; font-weight:bold; color:#ff4d8d;">
+        <label>LOG 2 (LABEL & TEXT)</label>
+        <input type="text" id="t-qlab2" value="AUDIO_LOG >" oninput="up()" style="margin-bottom:5px; font-weight:bold;">
         <textarea id="t-q2" oninput="up()">“이건 딱딱하다... 차라리 네 목덜미를 깨물게 해줘.”</textarea>
     </div>
 
@@ -147,12 +150,23 @@
 
 <script>
     function upImg(input) { if(input.files && input.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById('o-img').src = e.target.result; r.readAsDataURL(input.files[0]); } }
+    
+    // 헥사 코드를 RGB로 변환하는 함수 (광채 효과 유지용)
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
+    }
+
     function up() {
-        const m = document.getElementById('c-main').value;
-        const s = document.getElementById('c-sub').value;
-        document.documentElement.style.setProperty('--main-color', m);
-        document.documentElement.style.setProperty('--sub-color', s);
+        const masterColor = document.getElementById('c-master').value;
+        const rgb = hexToRgb(masterColor);
         
+        // CSS 변수 일괄 적용
+        document.documentElement.style.setProperty('--main-color', masterColor);
+        document.documentElement.style.setProperty('--main-rgb', rgb);
+        document.documentElement.style.setProperty('--sub-color', masterColor); // 서브 컬러도 메인에 맞춰 통일
+        document.documentElement.style.setProperty('--sub-rgb', rgb);
+
         if(document.getElementById('i-url').value) document.getElementById('o-img').src = document.getElementById('i-url').value;
         
         document.getElementById('o-tag').innerText = document.getElementById('t-tag').value;
@@ -160,24 +174,29 @@
         
         const metaLines = document.getElementById('t-meta').value.split('\n');
         let metaHtml = '';
-        metaLines.forEach(l => { const p = l.split(' '); metaHtml += `<b>${p[0]}</b> ${p.slice(1).join(' ')}<br>`; });
+        metaLines.forEach(l => { 
+            const p = l.split(' ');
+            if(p.length > 1) metaHtml += `<b>${p[0]}</b> ${p.slice(1).join(' ')}<br>`;
+            else metaHtml += `${l}<br>`;
+        });
         document.getElementById('o-meta').innerHTML = metaHtml;
 
         document.getElementById('o-rank').innerText = document.getElementById('t-rank').value;
         document.getElementById('o-l1').innerText = document.getElementById('t-l1').value;
         document.getElementById('o-v1').innerText = document.getElementById('t-v1').value;
         document.getElementById('o-l2').innerText = document.getElementById('t-l2').value;
+        document.getElementById('o-v2').innerText = document.getElementById('t-v2').value;
         
-        // 각각의 오디오 라벨 업데이트
         document.getElementById('o-qlab1').innerText = document.getElementById('t-qlab1').value;
         document.getElementById('o-qlab2').innerText = document.getElementById('t-qlab2').value;
-        
         document.getElementById('o-q1').innerText = document.getElementById('t-q1').value;
         document.getElementById('o-q2').innerText = document.getElementById('t-q2').value;
+        
         document.getElementById('o-ht').innerText = document.getElementById('t-ht').value;
         document.getElementById('o-hd').innerText = document.getElementById('t-hd').value;
         document.getElementById('o-foot').innerText = document.getElementById('t-foot').value;
     }
+
     function down() { domtoimage.toJpeg(document.getElementById('hud'), { quality: 0.95 }).then(url => { const l = document.createElement('a'); l.download = 'hud.jpg'; l.href = url; l.click(); }); }
     function copy() {
         const clone = document.getElementById('hud').cloneNode(true);
