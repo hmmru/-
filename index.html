@@ -52,7 +52,10 @@
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
         .value { font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; font-size: 0.92rem; color: var(--card-text); line-height: 1.8; padding-left: 8px; word-break: keep-all; text-align: justify; }
         .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 18px; margin-top: 8px; position: relative; }
-        .ability-box::after { content: 'POWER_DATA'; position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
+        
+        /* [수정 포인트] 가변 문구를 위한 스타일 */
+        .ability-box-tag { position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
+
         footer { padding: 15px 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 107, 129, 0.05); }
         .sys-beat { width: 4px; height: 4px; background: var(--main-color); animation: blink 1s infinite steps(1); }
         @keyframes loading { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
@@ -65,15 +68,15 @@
     <h2 style="font-family: 'Orbitron'; color: #ff6b81; margin-bottom: 20px;">STATION CONTROL</h2>
     
     <div class="edit-group">
-        <label>BACKGROUND IMAGE (URL / FILE)</label>
+        <label>BACKGROUND (URL / FILE)</label>
         <input type="text" id="bg-url" placeholder="Paste image URL here..." oninput="upBg(this.value)" style="margin-bottom:5px">
         <input type="file" id="bg-file" accept="image/*" onchange="upFile(this)">
     </div>
 
     <div class="edit-group">
-        <label>LOG TAG & GRADE</label>
+        <label>IDENTITY</label>
         <div class="row"><input type="text" id="in-tag" value="Fearless•HQ" oninput="up()"><input type="text" id="in-grade" value="S+ CLASS SENTINEL" oninput="up()"></div>
-        <label>NAME</label><input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()">
+        <input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()">
     </div>
 
     <div class="edit-group">
@@ -83,13 +86,18 @@
     </div>
 
     <div class="edit-group">
-        <label>SECTIONS (LABEL & VALUE)</label>
+        <label>DATA SECTIONS</label>
         <div class="row"><input type="text" id="l-1" value="BASIC_INFO" oninput="up()"><input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬" oninput="up()"></div>
         <input type="text" id="l-2" value="APPEARANCE" oninput="up()"><textarea id="v-2" oninput="up()">키 181cm...</textarea>
         <input type="text" id="l-3" value="PERSONALITY" oninput="up()"><textarea id="v-3" oninput="up()">태생적으로...</textarea>
         <input type="text" id="l-4" value="CHARACTER_TRAITS" oninput="up()"><textarea id="v-4" oninput="up()">혼자 있는 것을...</textarea>
-        <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()">
-        <input type="text" id="v-5-n" value="Heart Manifestation" oninput="up()" style="font-weight:bold;"><textarea id="v-5-d" oninput="up()">전투시작 시...</textarea>
+    </div>
+
+    <div class="edit-group">
+        <label>ABILITY & TAG</label>
+        <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()"><input type="text" id="v-5-n" value="Heart Manifestation" oninput="up()" style="font-weight:bold;"><textarea id="v-5-d" oninput="up()">전투시작 시...</textarea>
+        <label style="margin-top:10px">BOTTOM_RIGHT TAG</label>
+        <input type="text" id="in-power-tag" value="POWER_DATA" oninput="up()">
     </div>
 
     <button class="btn btn-save" onclick="down()">EXTRACT JPG</button>
@@ -115,6 +123,7 @@
                 <div class="data-row"><span class="label" id="ol-5">ABILITY_SPEC</span><div class="ability-box">
                     <div class="value" id="ov-5-n" style="font-weight:bold; color:var(--main-color); margin-bottom:5px; padding-left:0;">[...]</div>
                     <div class="value" id="ov-5-d" style="padding-left:0;">...</div>
+                    <div class="ability-box-tag" id="out-power-tag">POWER_DATA</div>
                 </div></div>
             </main>
             <footer><span>STATUS: STABLE_ACTIVE</span><div class="sys-beat"></div><span>ENCRYPTION: ACTIVE</span></footer>
@@ -137,8 +146,9 @@
         }
         document.getElementById('ov-5-n').innerText = "[ " + document.getElementById('v-5-n').value + " ]";
         document.getElementById('ov-5-d').innerText = document.getElementById('v-5-d').value;
+        document.getElementById('out-power-tag').innerText = document.getElementById('in-power-tag').value;
     }
-    function down() { domtoimage.toJpeg(document.getElementById('card'), { quality: 0.95 }).then(url => { const l = document.createElement('a'); l.download = 'sentinel_card.jpg'; l.href = url; l.click(); }); }
+    function down() { domtoimage.toJpeg(document.getElementById('card'), { quality: 0.95 }).then(url => { const l = document.createElement('a'); l.download = 'card.jpg'; l.href = url; l.click(); }); }
     function copy() {
         const clone = document.getElementById('card').cloneNode(true);
         const style = document.querySelector('style').innerHTML;
