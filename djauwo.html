@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR HIGH-RES</title>
+    <title>HUD MASTER EDITOR (CLEAN BORDER)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
-        /* 편집기 UI - 원본 유지 */
+        /* 편집기 레이아웃 유지 */
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
         .editor-panel { width: 450px; background: #1a111a; border-right: 1px solid #3d1c2d; padding: 20px; overflow-y: auto; box-sizing: border-box; }
         .preview-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; overflow: auto; background: #000; }
@@ -22,28 +22,36 @@
 
         :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
 
-        /* [HUD 디자인 - 원본 그대로 유지] */
-        .hud-wrapper, .hud-wrapper * { box-sizing: border-box; }
-        .hud-wrapper { width: 480px; background: rgba(10, 0, 10, 0.95); font-family: 'Rajdhani', sans-serif; border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); box-shadow: 0 0 20px rgba(var(--main-rgb), 0.5), inset 0 0 10px rgba(var(--main-rgb), 0.3); margin: 0 auto; position: relative; color: #fff; }
+        /* [HUD 디자인 - 외곽선 잔상 제거 버전] */
+        .hud-wrapper, .hud-wrapper * { box-sizing: border-box; outline: none !important; }
+        .hud-wrapper { 
+            width: 480px; background: #0a000a; font-family: 'Rajdhani', sans-serif; 
+            border-radius: 12px; overflow: hidden; 
+            border: 2px solid var(--main-color); 
+            box-shadow: 0 0 20px rgba(var(--main-rgb), 0.4); 
+            margin: 0 auto; position: relative; color: #fff;
+        }
         .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
-        .hud-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(var(--main-rgb), 0.5); position: relative; }
+        
+        .hud-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(var(--main-rgb), 0.4); position: relative; }
         .hud-header::after { content: ""; position: absolute; top: -2px; right: -2px; width: 30px; height: 30px; border-top: 4px solid var(--main-color); border-right: 4px solid var(--main-color); }
+        
         .category-tag { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--main-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
-        .subject { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+        .subject { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); }
         .meta-container { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); line-height: 1.6; }
         .meta-container b { color: #fff; text-transform: uppercase; }
         
         .hud-body { padding: 24px; }
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
-        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.5); position: relative; background: #000; line-height: 0; }
-        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); }
+        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.4); position: relative; background: #000; line-height: 0; }
+        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); border: none; }
         
-        /* 밀림 방지 고정 - white-space 추가 */
+        /* 밀림 방지 */
         .rank-overlay { 
             position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; 
             padding: 4px 10px; font-size: 0.85rem; font-weight: 800; line-height: 1; 
             text-transform: uppercase; letter-spacing: 1px; z-index: 20; border-radius: 2px;
-            white-space: nowrap; display: inline-block; /* 절대 안 밀리게 고정 */
+            white-space: nowrap; display: inline-block;
         }
         
         .info-section { display: grid; gap: 16px; }
@@ -100,12 +108,12 @@
         <textarea id="t-hd" oninput="up()" style="margin-top:5px">폭주 기록: ?회 / 애정 결핍 시 발생. 주변의 영혼을 말려 죽이는 ‘대규모 정서 초토화’ 발생 가능성이 지극히 높음.</textarea>
         <input type="text" id="t-foot" value="© GMB NET. HUD_UI_LEVEL_7. ALL RIGHTS RESERVED." oninput="up()" style="margin-top:5px">
     </div>
-    <button class="btn-extract" onclick="downloadHiRes()">EXTRACT JPG (HI-RES)</button>
+    <button class="btn-extract" onclick="downloadClean()">EXTRACT JPG (NO BORDER)</button>
     <button class="btn-copy" onclick="copy()">COPY HUD CODE</button>
 </div>
 
 <div class="preview-panel">
-    <div class="hud-wrapper" id="hud" style="background-color: #0a000a;">
+    <div class="hud-wrapper" id="hud">
         <div class="hud-header">
             <span class="category-tag" id="o-tag"></span>
             <h1 class="subject"><b><span id="o-subject" style="color:#fff"></span></b></h1>
@@ -114,7 +122,7 @@
         <div class="hud-body">
             <div class="profile-viewer">
                 <div class="image-card">
-                    <img id="o-img" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D" crossOrigin="anonymous">
+                    <img id="o-img" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D" crossorigin="anonymous">
                     <div class="rank-overlay" id="o-rank"></div>
                 </div>
             </div>
@@ -137,15 +145,10 @@
 </div>
 
 <script>
-    // 이미지 로드 시 크로스 오리진 설정 (html2canvas 화질 저하 방지 핵심)
     function upImg(input) { 
         if(input.files && input.files[0]) { 
             const r = new FileReader(); 
-            r.onload = e => {
-                const img = document.getElementById('o-img');
-                img.crossOrigin = "anonymous"; // 핵심
-                img.src = e.target.result;
-            };
+            r.onload = e => document.getElementById('o-img').src = e.target.result;
             r.readAsDataURL(input.files[0]); 
         } 
     }
@@ -160,11 +163,7 @@
         document.documentElement.style.setProperty('--main-color', color);
         document.documentElement.style.setProperty('--main-rgb', hexToRgb(color));
         const imgUrl = document.getElementById('i-url').value;
-        if(imgUrl) {
-            const img = document.getElementById('o-img');
-            img.crossOrigin = "anonymous"; // 핵심
-            img.src = imgUrl;
-        }
+        if(imgUrl) document.getElementById('o-img').src = imgUrl;
         document.getElementById('o-tag').innerText = document.getElementById('t-tag').value;
         document.getElementById('o-subject').innerText = document.getElementById('t-subject').value;
         const metaLines = document.getElementById('t-meta').value.split('\n');
@@ -185,29 +184,20 @@
         document.getElementById('o-foot').innerText = document.getElementById('t-foot').value;
     }
 
-    // [핵심] 고화질 & 글자 밀림 방지 다운로드 로직
-    async function downloadHiRes() {
+    async function downloadClean() {
         const hud = document.getElementById('hud');
-        
-        // 1. 폰트 로딩 강제 대기 (글자 밀림 방지 핵심)
         await document.fonts.ready;
         
-        // 2. html2canvas 옵션 설정 (고화질 핵심)
-        const options = {
-            scale: 3, // 3배 높여서 캡처 (개떡같은 화질 탈출)
-            useCORS: true, // 크로스오리진 이미지 허용
-            backgroundColor: "#0a000a", // 배경색 강제
+        // 외곽선 찌꺼기 방지를 위한 투명 테두리 처리 및 스케일 조정
+        html2canvas(hud, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: null, // 배경 투명으로 잡아도 wrapper 색상이 있어 깨끗하게 나옴
+            removeContainer: true,
             logging: false,
-            onclone: (clonedDoc) => {
-                // 복제된 DOM에서 스타일 재점검 (필요시)
-            }
-        };
-
-        // 3. 렌더링 및 다운로드
-        html2canvas(hud, options).then(canvas => {
+        }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_high_res.jpg';
-            // 화질 유지를 위해 JPEG 대신 PNG나 고화질 JPEG 사용. 여기선 JPEG quality 0.95
+            link.download = 'hud_clean.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
@@ -216,7 +206,7 @@
     function copy() {
         const clone = document.getElementById('hud').cloneNode(true);
         const style = document.querySelector('style').innerHTML;
-        navigator.clipboard.writeText(`<div><style>${style}<\/style>${clone.outerHTML}<\/div>`).then(()=>alert('복사 성공!'));
+        navigator.clipboard.writeText(`<div><style>${style}<\/style>${clone.outerHTML}<\/div>`).then(()=>alert('복사 완료!'));
     }
     up();
 </script>
