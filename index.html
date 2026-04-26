@@ -92,7 +92,7 @@
         .card-catch { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 1px; opacity: 0.7; }
         
         /* 쿼트 자간 및 띄어쓰기 조정 */
-        .card-quote { font-size: 0.88rem; color: var(--main-color); font-weight: 700; line-height: 1.45; letter-spacing: -0.05em; word-spacing: -0.1em; word-break: keep-all; margin: 0; }
+        .card-quote { font-size: 0.88rem; color: var(--main-color); font-weight: 700; line-height: 1.35; letter-spacing: -0.05em; word-spacing: -0.1em; word-break: keep-all; margin: 0; }
 
         .data-row { margin-bottom: 20px; }
         .label { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--main-color); font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
@@ -104,16 +104,16 @@
             font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; 
             font-size: 0.84rem; 
             color: var(--text-color); 
-            line-height: 1.5; 
-            letter-spacing: -0.06em; /* 자간 더 긴밀하게 */
-            word-spacing: -0.15em;   /* 띄어쓰기 간격 축소 */
+            line-height: 1.25; /* 행간을 기존 1.5에서 더 축소 */
+            letter-spacing: -0.06em; 
+            word-spacing: -0.15em;   
             padding-left: 8px; 
             word-break: keep-all; 
             text-align: justify; 
         }
 
         .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 15px; margin-top: 8px; position: relative; }
-        .ability-box::after { content: 'POWER_DATA'; position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
+        .ability-box::after { content: attr(data-label); position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
 
         footer { padding: 15px 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 107, 129, 0.05); }
         .sys-beat { width: 4px; height: 4px; background: var(--main-color); animation: blink 1s infinite steps(1); }
@@ -175,10 +175,11 @@
         <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()">
         <input type="text" id="v-5-t" value="[ Heart Manifestation ]" oninput="up()">
         <textarea id="v-5-b" oninput="up()">전투시작 시, 손끝에서 형성되는 핑크빛 하트 에너지체...</textarea>
+        <input type="text" id="in-power-label" value="POWER_DATA" oninput="up()" placeholder="Bottom Label (ex: POWER_DATA)">
     </div>
 
     <div class="edit-group">
-        <label>FOOTER STATUS</label>
+<label>FOOTER STATUS</label>
         <div class="row">
             <input type="text" id="f-l" value="STATUS: STABLE_ACTIVE" oninput="up()">
             <input type="text" id="f-r" value="ENCRYPTION: ACTIVE" oninput="up()">
@@ -210,7 +211,7 @@
                 <div class="data-row"><span class="label" id="out-l4">CHARACTER_TRAITS</span><div class="value" id="out-v4">혼자 있는 것을 극도로 견디지 못함...</div></div>
                 <div class="data-row">
                     <span class="label" id="out-l5">ABILITY_SPEC</span>
-                    <div class="ability-box">
+                    <div class="ability-box" id="out-ability-box" data-label="POWER_DATA">
                         <div class="value" id="out-v5-t" style="font-weight: bold; color: var(--main-color); margin-bottom: 5px; padding-left: 0;">[ Heart Manifestation ]</div>
                         <div class="value" id="out-v5-b" style="padding-left: 0;">전투시작 시, 손끝에서 형성되는 핑크빛 하트 에너지체...</div>
                     </div>
@@ -245,6 +246,9 @@
         ids.forEach(pair => {
             document.getElementById(pair[1]).innerText = document.getElementById(pair[0]).value;
         });
+
+        // POWER_DATA 라벨 수정용
+        document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
     }
 
     function saveImage() {
@@ -272,4 +276,3 @@
 
 </body>
 </html>
-
