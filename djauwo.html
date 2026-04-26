@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR (FINAL FIX)</title>
+    <title>HUD MASTER EDITOR (RE-FIXED)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
-    <style>
+    <style id="main-style">
         :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Pretendard', sans-serif; color: #fff; overflow: hidden; }
         
@@ -90,7 +90,7 @@
         <input type="color" id="c-master" value="#ff4d8d" oninput="up()">
     </div>
     <div class="edit-group">
-        <label>IMAGE (HQ & LIGHTWEIGHT)</label>
+        <label>IMAGE (HQ OPTIMIZED)</label>
         <input type="file" id="f-input" accept="image/*" onchange="upImg(this)">
     </div>
     <div class="edit-group">
@@ -169,16 +169,14 @@
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const TARGET_WIDTH = 1000; // 화질은 유지하고 용량은 획기적으로 줄이는 사이즈
-                    let width = img.width;
-                    let height = img.height;
+                    const TARGET_WIDTH = 1000;
+                    let width = img.width; let height = img.height;
                     if (width > TARGET_WIDTH) { height *= TARGET_WIDTH / width; width = TARGET_WIDTH; }
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.imageSmoothingEnabled = true;
                     ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0, width, height);
-                    // PNG 대신 JPEG 0.85 사용: 용량이 1/10로 줄어 복사 버그 완전 해결
                     currentImageData = canvas.toDataURL('image/jpeg', 0.85);
                     document.getElementById('o-img').src = currentImageData;
                 };
@@ -232,12 +230,20 @@
     function copy() {
         const hudClone = document.getElementById('hud').cloneNode(true);
         if (currentImageData) { hudClone.querySelector('#o-img').src = currentImageData; }
-        const style = document.querySelector('style').innerHTML;
-        const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden; background:#000; padding:20px 0;">${hudClone.outerHTML}</div><\/div>`;
         
-        // 데이터 용량이 줄어들어 이제 바로 복사됨
+        const currentColor = document.getElementById('c-master').value;
+        const currentRgb = hexToRgb(currentColor);
+        
+        // CSS 스타일에서 테마색 변수 강제 교체 (출력물에 반영되도록)
+        let styleContent = document.getElementById('main-style').innerHTML;
+        styleContent = styleContent.replace(/--main-color:\s*[^;]+;/, `--main-color: ${currentColor};`);
+        styleContent = styleContent.replace(/--main-rgb:\s*[^;]+;/, `--main-rgb: ${currentRgb};`);
+        
+        // 외부 검은 사각형 제거 (background:#000 삭제)
+        const cleanCode = `<div><style>${styleContent}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden; padding:20px 0;">${hudClone.outerHTML}</div><\/div>`;
+        
         navigator.clipboard.writeText(cleanCode).then(() => {
-            alert('복사 성공! 이제 어디든 붙여넣으세요.');
+            alert('색상 반영 및 검은 사각형 제거 완료! 코드 복사되었습니다.');
         }).catch(() => {
             const t = document.createElement("textarea"); document.body.appendChild(t);
             t.value = cleanCode; t.select(); document.execCommand('copy'); document.body.removeChild(t);
