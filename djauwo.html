@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR (RESPONSIVE RATIO)</title>
+    <title>HUD MASTER EDITOR (OPTIMIZED)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
@@ -52,14 +52,7 @@
         
         .hud-body { padding: 24px; }
         
-        @media (max-width: 480px) {
-            .hud-header, .hud-body { padding: 18px; }
-            .subject { font-size: 1.3rem; }
-        }
-
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
-        
-        /* 이미지 비율 유지 로직 수정: 고정 높이 제거, object-fit 제거 */
         .image-card { 
             width: 100%; 
             border-radius: 4px; 
@@ -67,13 +60,13 @@
             border: 1px solid rgba(var(--main-rgb), 0.4); 
             position: relative; 
             background: #000; 
-            display: flex; /* 이미지가 영역을 꽉 채우도록 설정 */
+            display: flex;
             justify-content: center;
             align-items: center;
         }
         .image-card img { 
             width: 100%; 
-            height: auto; /* 이미지 원본 비율에 맞춰 높이 자동 조절 */
+            height: auto; 
             display: block; 
             filter: brightness(0.9) contrast(1.1); 
             border: none;
@@ -112,7 +105,7 @@
         <input type="color" id="c-master" value="#ff4d8d" oninput="up()">
     </div>
     <div class="edit-group">
-        <label>IMAGE URL / FILE</label>
+        <label>IMAGE URL / FILE (AUTO-RESIZE)</label>
         <input type="text" id="i-url" placeholder="URL..." oninput="up()">
         <input type="file" id="f-input" accept="image/*" onchange="upImg(this)" style="margin-top:5px">
     </div>
@@ -146,7 +139,7 @@
         <textarea id="t-hd" oninput="up()" style="margin-top:5px">폭주 기록: ?회 / 애정 결핍 시 발생. 주변의 영혼을 말려 죽이는 ‘대규모 정서 초토화’ 발생 가능성이 지극히 높음.</textarea>
         <input type="text" id="t-foot" value="© GMB NET. HUD_UI_LEVEL_7. ALL RIGHTS RESERVED." oninput="up()" style="margin-top:5px">
     </div>
-    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (ORIGINAL RATIO)</button>
+    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (RATIO KEPT)</button>
     <button class="btn-copy" onclick="copy()">COPY HUD CODE</button>
 </div>
 
@@ -185,12 +178,33 @@
 <script>
     let currentImageData = "";
 
+    // 이미지 최적화 리사이징 로직 추가
     function upImg(input) { 
         if(input.files && input.files[0]) { 
             const r = new FileReader(); 
             r.onload = e => {
-                currentImageData = e.target.result;
-                document.getElementById('o-img').src = currentImageData;
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1000; // 고화질 유지하며 용량만 줄이는 최적 폭
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // 최적화된 데이터 저장 (용량이 확 줄어듬)
+                    currentImageData = canvas.toDataURL('image/png', 0.8);
+                    document.getElementById('o-img').src = currentImageData;
+                };
+                img.src = e.target.result;
             };
             r.readAsDataURL(input.files[0]); 
         } 
@@ -240,19 +254,14 @@
         hud.style.width = '480px';
 
         html2canvas(hud, {
-            scale: 4, // 화질을 위해 스케일 업 유지
+            scale: 3,
             useCORS: true,
             backgroundColor: null,
             removeContainer: true,
-            imageTimeout: 0,
             logging: false,
-            onclone: (clonedDoc) => {
-                const img = clonedDoc.getElementById('o-img');
-                if(img) img.style.imageRendering = 'auto';
-            }
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_ratio_output.png';
+            link.download = 'hud_output.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
             hud.style.width = originalWidth;
@@ -267,7 +276,7 @@
         const style = document.querySelector('style').innerHTML;
         const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden; background:#000; padding:20px 0;">${hudClone.outerHTML}</div><\/div>`;
         
-        navigator.clipboard.writeText(cleanCode).then(()=>alert('비율 유지 이미지 포함 코드 복사 완료!'));
+        navigator.clipboard.writeText(cleanCode).then(()=>alert('최적화된 이미지 포함 코드 복사 완료! 이제 잘 붙여넣어질 거야.'));
     }
     up();
 </script>
