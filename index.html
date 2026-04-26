@@ -38,7 +38,7 @@
             --main-color: #ff6b81;
             --sub-color: #ffb7c5;
             --main-rgb: 255, 107, 129;
-            --text-color: #111111; /* 본문 글씨색 변수 추가 */
+            --text-color: #111111; 
         }
 
         .card {
@@ -84,23 +84,35 @@
         main::-webkit-scrollbar { width: 2px; }
         main::-webkit-scrollbar-thumb { background: var(--main-color); }
 
-        .quote-card-unit { margin-bottom: 30px; position: relative; padding: 18px 20px; background: rgba(255, 107, 129, 0.05); border: 1px solid rgba(255, 107, 129, 0.2); }
+        .quote-card-unit { margin-bottom: 22px; position: relative; padding: 15px 18px; background: rgba(255, 107, 129, 0.05); border: 1px solid rgba(255, 107, 129, 0.2); }
         .quote-card-unit::before, .quote-card-unit::after { content: ''; position: absolute; width: 8px; height: 8px; border: 2px solid var(--main-color); }
         .quote-card-unit::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
         .quote-card-unit::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
         
         .card-catch { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 1px; opacity: 0.7; }
-        .card-quote { font-size: 0.95rem; color: var(--main-color); font-weight: 700; line-height: 1.5; word-break: keep-all; margin: 0; }
+        
+        /* [수정] 쿼트 내용 텍스트 최적화 */
+        .card-quote { font-size: 0.88rem; color: var(--main-color); font-weight: 700; line-height: 1.45; letter-spacing: -0.01em; word-break: keep-all; margin: 0; }
 
-        .data-row { margin-bottom: 25px; }
+        /* [수정] 데이터 간격 소폭 축소 */
+        .data-row { margin-bottom: 20px; }
         .label { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--main-color); font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
         .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
 
-        /* 본문 글씨색에 변수 적용 */
-        .value { font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; font-size: 0.92rem; color: var(--text-color); line-height: 1.65; letter-spacing: -0.02em; padding-left: 8px; word-break: keep-all; text-align: justify; }
+        /* [수정] 본문 텍스트 크기, 자간, 행간 최적화 */
+        .value { 
+            font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; 
+            font-size: 0.84rem; /* 크기 축소 */
+            color: var(--text-color); 
+            line-height: 1.55; /* 행간 축소 */
+            letter-spacing: -0.035em; /* 자간 축소 */
+            padding-left: 8px; 
+            word-break: keep-all; 
+            text-align: justify; 
+        }
 
-        .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 18px; margin-top: 8px; position: relative; }
+        .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 15px; margin-top: 8px; position: relative; }
         .ability-box::after { content: 'POWER_DATA'; position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
 
         footer { padding: 15px 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 107, 129, 0.05); }
@@ -216,9 +228,7 @@
 <script>
     function up() {
         const root = document.documentElement;
-        // 오파시티 업데이트
         root.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
-        // 본문 글씨 색상 업데이트
         root.style.setProperty('--text-color', document.getElementById('c-text').value);
 
         const ids = [
@@ -255,7 +265,6 @@
     function copyHTML() {
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleTags = document.querySelector('style').innerHTML;
-        // 복사 시 주변 검은 여백을 없애고 카드 본체만 중앙에 위치하도록 수정
         const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center;">${cardHTML}</div>`;
         navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
     }
@@ -263,4 +272,3 @@
 
 </body>
 </html>
-
