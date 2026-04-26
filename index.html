@@ -39,6 +39,7 @@
             --sub-color: #ffb7c5;
             --main-rgb: 255, 107, 129;
             --text-color: #111111; 
+            --bg-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
         }
 
         .card {
@@ -47,7 +48,7 @@
             aspect-ratio: 440 / 850;
             height: auto;
             margin: 0 auto;
-            background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
+            background-image: var(--bg-image);
             background-size: cover; background-position: center; border: 1px solid var(--main-color);
             position: relative; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; flex-shrink: 0;
         }
@@ -104,7 +105,7 @@
             font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; 
             font-size: 0.84rem; 
             color: var(--text-color); 
-            line-height: 1.25; /* 행간을 기존 1.5에서 더 축소 */
+            line-height: 1.25; 
             letter-spacing: -0.06em; 
             word-spacing: -0.15em;   
             padding-left: 8px; 
@@ -131,6 +132,8 @@
         <label>SYSTEM SETTING</label>
         <div class="row"><span>Opacity</span><input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7" oninput="up()"></div>
         <div class="row"><span>Text Color</span><input type="color" id="c-text" value="#111111" oninput="up()"></div>
+        <div class="row" style="margin-top:10px;"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..." oninput="changeBgUrl(this.value)"></div>
+        <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*" onchange="changeBgFile(this)"></div>
     </div>
     
     <div class="edit-group">
@@ -179,7 +182,7 @@
     </div>
 
     <div class="edit-group">
-<label>FOOTER STATUS</label>
+        <label>FOOTER STATUS</label>
         <div class="row">
             <input type="text" id="f-l" value="STATUS: STABLE_ACTIVE" oninput="up()">
             <input type="text" id="f-r" value="ENCRYPTION: ACTIVE" oninput="up()">
@@ -247,8 +250,23 @@
             document.getElementById(pair[1]).innerText = document.getElementById(pair[0]).value;
         });
 
-        // POWER_DATA 라벨 수정용
         document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
+    }
+
+    function changeBgUrl(url) {
+        if(url.trim() !== "") {
+            document.documentElement.style.setProperty('--bg-image', `url('${url}')`);
+        }
+    }
+
+    function changeBgFile(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.documentElement.style.setProperty('--bg-image', `url('${e.target.result}')`);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function saveImage() {
@@ -276,3 +294,4 @@
 
 </body>
 </html>
+
