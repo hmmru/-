@@ -32,6 +32,23 @@
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-copy { background: #444; color: #fff; border: 1px solid #555; }
 
+        /* [추가] CSS 애니메이션 온오프 스위치 스타일 */
+        .switch-label {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px; background: #333; border-radius: 4px; cursor: pointer;
+            border: 1px solid #444; margin-top: 10px; font-family: 'Orbitron'; font-size: 11px; color: var(--main-color);
+        }
+        #ani-toggle { display: none; }
+        .switch-btn {
+            width: 40px; height: 20px; background: #555; border-radius: 20px; position: relative; transition: 0.3s;
+        }
+        .switch-btn::after {
+            content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+            background: #fff; border-radius: 50%; transition: 0.3s;
+        }
+        #ani-toggle:checked + .switch-label .switch-btn { background: var(--main-color); }
+        #ani-toggle:checked + .switch-label .switch-btn::after { left: 22px; }
+
         :root {
             --bg-opacity: 0.7; 
             --main-color: #ff6b81;
@@ -39,6 +56,24 @@
             --main-rgb: 255, 107, 129;
             --text-color: #111111; 
             --bg-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
+        }
+
+        /* [추가] 애니메이션 핵심 로직 */
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes bg-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* 스위치가 켜졌을 때만 작동 */
+        #ani-toggle:checked ~ .preview-side .card {
+            animation: floating 4s ease-in-out infinite;
+        }
+        #ani-toggle:checked ~ .preview-side .card .bg-layer {
+            animation: bg-pulse 6s ease-in-out infinite;
         }
 
         .card {
@@ -50,6 +85,7 @@
             border: 1px solid var(--main-color);
             position: relative; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; flex-shrink: 0;
             background: #000;
+            transition: transform 0.5s ease-out;
         }
 
         .bg-layer {
@@ -58,6 +94,7 @@
             background-image: var(--bg-image);
             background-size: cover; background-position: center;
             z-index: 0;
+            will-change: transform;
         }
 
         .bg-layer::before {
@@ -130,6 +167,8 @@
 </head>
 <body>
 
+<input type="checkbox" id="ani-toggle">
+
 <div class="editor-side">
     <h2 style="font-family: 'Orbitron'; color: var(--main-color); margin-bottom: 20px; font-size: 1.2rem;">STATION CONTROL</h2>
     
@@ -139,6 +178,11 @@
         <div class="row"><span>Text Color</span><input type="color" id="c-text" value="#111111" oninput="up()"></div>
         <div class="row" style="margin-top:10px;"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..." oninput="changeBgUrl(this.value)"></div>
         <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*" onchange="changeBgFile(this)"></div>
+        
+        <label for="ani-toggle" class="switch-label">
+            FLOAT ANIMATION
+            <div class="switch-btn"></div>
+        </label>
     </div>
     
     <div class="edit-group">
@@ -253,7 +297,9 @@
         ];
 
         ids.forEach(pair => {
-            document.getElementById(pair[1]).innerText = document.getElementById(pair[0]).value;
+            const out = document.getElementById(pair[1]);
+            const input = document.getElementById(pair[0]);
+            if(out && input) out.innerText = input.value;
         });
 
         document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
@@ -276,7 +322,9 @@
     }
 
     function saveImage() {
-        html2canvas(document.getElementById('capture-area'), { 
+        const area = document.getElementById('capture-area');
+        // 저장 시 애니메이션이 튀지 않도록 잠시 정지 후 캡처
+        html2canvas(area, { 
             backgroundColor: null, 
             useCORS: true, 
             scale: 2,
@@ -293,7 +341,8 @@
     function copyHTML() {
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleTags = document.querySelector('style').innerHTML;
-        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
+        // 복사 시에는 체크박스 온오프 상태를 포함할 수 없으므로 카드 본체와 스타일만 복사
+        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden; padding:40px 0;">${cardHTML}</div>`;
         navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
     }
 </script>
