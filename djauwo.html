@@ -58,8 +58,27 @@
         }
 
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
-        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.4); position: relative; background: #000; line-height: 0; }
-        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); border: none; }
+        
+        /* 이미지 화질 유지 로직: 벡터 방식으로 크기 제어 */
+        .image-card { 
+            width: 100%; 
+            height: 260px; /* 고정 높이 제공하여 큰 이미지 대응 */
+            border-radius: 4px; 
+            overflow: hidden; 
+            border: 1px solid rgba(var(--main-rgb), 0.4); 
+            position: relative; 
+            background: #000; 
+        }
+        .image-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* 비율 유지하며 꽉 채움 */
+            object-position: center;
+            display: block; 
+            filter: brightness(0.9) contrast(1.1); 
+            border: none;
+            image-rendering: -webkit-optimize-contrast; /* 선명도 보정 */
+        }
         
         .rank-overlay { 
             position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; 
@@ -95,7 +114,7 @@
     <div class="edit-group">
         <label>IMAGE URL / FILE</label>
         <input type="text" id="i-url" placeholder="URL..." oninput="up()">
-        <input type="file" accept="image/*" onchange="upImg(this)" style="margin-top:5px">
+        <input type="file" id="f-input" accept="image/*" onchange="upImg(this)" style="margin-top:5px">
     </div>
     <div class="edit-group">
         <label>HEADER & META</label>
@@ -127,7 +146,7 @@
         <textarea id="t-hd" oninput="up()" style="margin-top:5px">폭주 기록: ?회 / 애정 결핍 시 발생. 주변의 영혼을 말려 죽이는 ‘대규모 정서 초토화’ 발생 가능성이 지극히 높음.</textarea>
         <input type="text" id="t-foot" value="© GMB NET. HUD_UI_LEVEL_7. ALL RIGHTS RESERVED." oninput="up()" style="margin-top:5px">
     </div>
-    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (NO BORDER)</button>
+    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (ULTRA HQ)</button>
     <button class="btn-copy" onclick="copy()">COPY HUD CODE</button>
 </div>
 
@@ -141,7 +160,7 @@
         <div class="hud-body">
             <div class="profile-viewer">
                 <div class="image-card">
-                    <img id="o-img" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D" crossorigin="anonymous">
+                    <img id="o-img" src="" crossorigin="anonymous">
                     <div class="rank-overlay" id="o-rank"></div>
                 </div>
             </div>
@@ -164,10 +183,15 @@
 </div>
 
 <script>
+    let currentImageData = "";
+
     function upImg(input) { 
         if(input.files && input.files[0]) { 
             const r = new FileReader(); 
-            r.onload = e => document.getElementById('o-img').src = e.target.result;
+            r.onload = e => {
+                currentImageData = e.target.result;
+                document.getElementById('o-img').src = currentImageData;
+            };
             r.readAsDataURL(input.files[0]); 
         } 
     }
@@ -181,8 +205,13 @@
         const color = document.getElementById('c-master').value;
         document.documentElement.style.setProperty('--main-color', color);
         document.documentElement.style.setProperty('--main-rgb', hexToRgb(color));
-        const imgUrl = document.getElementById('i-url').value;
-        if(imgUrl) document.getElementById('o-img').src = imgUrl;
+        
+        const imgUrlInput = document.getElementById('i-url').value;
+        if(imgUrlInput) {
+            document.getElementById('o-img').src = imgUrlInput;
+            currentImageData = imgUrlInput;
+        }
+
         document.getElementById('o-tag').innerText = document.getElementById('t-tag').value;
         document.getElementById('o-subject').innerText = document.getElementById('t-subject').value;
         const metaLines = document.getElementById('t-meta').value.split('\n');
@@ -211,14 +240,20 @@
         hud.style.width = '480px';
 
         html2canvas(hud, {
-            scale: 3,
+            scale: 4, // 화질을 위해 스케일 업
             useCORS: true,
-            backgroundColor: null, // PNG 투명도 지원 위해 null 설정 가능하나 래퍼색 유지됨
+            backgroundColor: null,
             removeContainer: true,
+            imageTimeout: 0,
             logging: false,
+            onclone: (clonedDoc) => {
+                // 복제된 문서에서도 이미지 화질 유지 설정
+                const img = clonedDoc.getElementById('o-img');
+                if(img) img.style.imageRendering = 'auto';
+            }
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_clean.png';
+            link.download = 'hud_hq_output.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
             hud.style.width = originalWidth;
@@ -226,10 +261,14 @@
     }
 
     function copy() {
-        const clone = document.getElementById('hud').cloneNode(true);
+        const hudClone = document.getElementById('hud').cloneNode(true);
+        const cloneImg = hudClone.querySelector('#o-img');
+        if (currentImageData) { cloneImg.src = currentImageData; }
+        
         const style = document.querySelector('style').innerHTML;
-        const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden;">${clone.outerHTML}</div><\/div>`;
-        navigator.clipboard.writeText(cleanCode).then(()=>alert('복사 완료!'));
+        const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden; background:#000; padding:20px 0;">${hudClone.outerHTML}</div><\/div>`;
+        
+        navigator.clipboard.writeText(cleanCode).then(()=>alert('고해상도 이미지 포함 코드 복사 완료!'));
     }
     up();
 </script>
