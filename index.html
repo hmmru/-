@@ -32,7 +32,7 @@
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-copy { background: #444; color: #fff; border: 1px solid #555; }
         .btn-toggle { background: #333; color: var(--main-color); border: 1px solid var(--main-color); margin-top: 5px; font-size: 10px; }
-        .btn-toggle.active { background: var(--main-color); color: #fff; }
+        .btn-toggle.active { background: var(--main-color); color: #fff; box-shadow: 0 0 10px var(--main-color); }
 
         :root {
             --bg-opacity: 0.7; 
@@ -60,7 +60,7 @@
             background-image: var(--bg-image);
             background-size: cover; background-position: center;
             z-index: 0;
-            transition: transform 0.2s ease-out; /* 조금 더 부드럽게 수정 */
+            transition: transform 0.1s ease-out;
             will-change: transform;
         }
 
@@ -144,7 +144,7 @@
         <div class="row" style="margin-top:10px;"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..."></div>
         <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*"></div>
         <label style="margin-top:15px;">3D INTERFACE</label>
-        <button id="tilt-toggle" class="btn btn-toggle active">3D BG MOTION: ALWAYS ON</button>
+        <button id="tilt-toggle-btn" class="btn btn-toggle">3D BG MOTION: OFF</button>
     </div>
     
     <div class="edit-group">
@@ -200,8 +200,8 @@
         </div>
     </div>
 
-    <button id="btn-save" class="btn btn-save">SAVE PNG</button>
-    <button id="btn-copy" class="btn btn-copy">COPY HTML</button>
+    <button id="btn-save-png" class="btn btn-save">SAVE PNG</button>
+    <button id="btn-copy-html" class="btn btn-copy">COPY HTML</button>
 </div>
 
 <div class="preview-side" id="tilt-container">
@@ -242,21 +242,45 @@
 </div>
 
 <script>
+    let isTiltEnabled = false;
     const bgLayer = document.getElementById('bg-motion-layer');
     const container = document.getElementById('tilt-container');
+    const tiltBtn = document.getElementById('tilt-toggle-btn');
 
-    // 마우스 추적 (자동 흔들림) - 티스토리 호환형
+    // [수정] 버튼 클릭 시 상태 반전 로직 (티스토리 호환형)
+    function toggleTilt() {
+        isTiltEnabled = !isTiltEnabled;
+        if (isTiltEnabled) {
+            tiltBtn.innerText = "3D BG MOTION: ON";
+            tiltBtn.classList.add('active');
+            bgLayer.style.transform = "scale(1.1)";
+            // 모바일 권한 요청
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission();
+            }
+        } else {
+            tiltBtn.innerText = "3D BG MOTION: OFF";
+            tiltBtn.classList.remove('active');
+            bgLayer.style.transform = "translate(0, 0) scale(1.0)";
+        }
+    }
+
+    // 마우스 이동 이벤트
     container.addEventListener('mousemove', (e) => {
+        if (!isTiltEnabled) return;
         const rect = container.getBoundingClientRect();
-        const moveX = (e.clientX - rect.left - rect.width / 2) / 15;
-        const moveY = (e.clientY - rect.top - rect.height / 2) / 15;
+        const moveX = (e.clientX - rect.left - rect.width / 2) / 20;
+        const moveY = (e.clientY - rect.top - rect.height / 2) / 20;
         bgLayer.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
     });
 
     container.addEventListener('mouseleave', () => {
-        bgLayer.style.transform = `translate(0, 0) scale(1.1)`;
+        if (isTiltEnabled) {
+            bgLayer.style.transform = `translate(0, 0) scale(1.1)`;
+        }
     });
 
+    // 화면 동기화
     function up() {
         const root = document.documentElement;
         root.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
@@ -283,7 +307,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 모든 인풋에 이벤트 리스너 강제 연결 (티스토리 호환)
+        // 티스토리가 onclick을 지워버리는 걸 방지하기 위해 여기서 연결
+        tiltBtn.addEventListener('click', toggleTilt);
+        document.getElementById('btn-save-png').addEventListener('click', saveImage);
+        document.getElementById('btn-copy-html').addEventListener('click', copyHTML);
+
         document.querySelectorAll('input, textarea').forEach(el => {
             el.addEventListener('input', up);
         });
@@ -300,27 +328,29 @@
             if(this.value.trim() !== "") document.documentElement.style.setProperty('--bg-image', `url('${this.value}')`);
         });
 
-        document.getElementById('btn-save').addEventListener('click', () => {
-            bgLayer.style.transform = "translate(0, 0) scale(1.0)";
-            html2canvas(document.getElementById('capture-area'), { 
-                backgroundColor: null, useCORS: true, scale: 2, width: 440, height: 850
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'sentinel-card.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        });
-
-        document.getElementById('btn-copy').addEventListener('click', () => {
-            const cardHTML = document.getElementById('capture-area').outerHTML;
-            const styleTags = document.querySelector('style').innerHTML;
-            const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
-            navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
-        });
-
         up();
     });
+
+    function saveImage() {
+        const prevTransform = bgLayer.style.transform;
+        bgLayer.style.transform = "translate(0, 0) scale(1.0)";
+        html2canvas(document.getElementById('capture-area'), { 
+            backgroundColor: null, useCORS: true, scale: 2, width: 440, height: 850
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'sentinel-card.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            if(isTiltEnabled) bgLayer.style.transform = prevTransform;
+        });
+    }
+
+    function copyHTML() {
+        const cardHTML = document.getElementById('capture-area').outerHTML;
+        const styleTags = document.querySelector('style').innerHTML;
+        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
+        navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
+    }
 </script>
 
 </body>
