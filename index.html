@@ -91,22 +91,22 @@
         
         .card-catch { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 1px; opacity: 0.7; }
         
-        /* [수정] 쿼트 내용 텍스트 최적화 */
-        .card-quote { font-size: 0.88rem; color: var(--main-color); font-weight: 700; line-height: 1.45; letter-spacing: -0.01em; word-break: keep-all; margin: 0; }
+        /* 쿼트 자간 및 띄어쓰기 조정 */
+        .card-quote { font-size: 0.88rem; color: var(--main-color); font-weight: 700; line-height: 1.45; letter-spacing: -0.05em; word-spacing: -0.1em; word-break: keep-all; margin: 0; }
 
-        /* [수정] 데이터 간격 소폭 축소 */
         .data-row { margin-bottom: 20px; }
         .label { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--main-color); font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
         .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
 
-        /* [수정] 본문 텍스트 크기, 자간, 행간 최적화 */
+        /* 본문 글자 크기, 자간, 행간, 띄어쓰기(word-spacing) 최적화 */
         .value { 
             font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; 
-            font-size: 0.84rem; /* 크기 축소 */
+            font-size: 0.84rem; 
             color: var(--text-color); 
-            line-height: 1.55; /* 행간 축소 */
-            letter-spacing: -0.035em; /* 자간 축소 */
+            line-height: 1.5; 
+            letter-spacing: -0.06em; /* 자간 더 긴밀하게 */
+            word-spacing: -0.15em;   /* 띄어쓰기 간격 축소 */
             padding-left: 8px; 
             word-break: keep-all; 
             text-align: justify; 
@@ -272,3 +272,4 @@
 
 </body>
 </html>
+
