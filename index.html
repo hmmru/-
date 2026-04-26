@@ -3,32 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SENTINEL CARD AUTO-MOTION</title>
+    <title>SENTINEL CARD FULL VERSION</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-        /* 기본 레이아웃 */
-        body { background: #1a1a1a; margin: 0; display: flex; height: 100vh; font-family: 'Pretendard', sans-serif; color: #fff; overflow: hidden; }
-        @media (max-width: 900px) {
-            body { flex-direction: column; overflow-y: auto; height: auto; }
-            .editor-side { width: 100% !important; border-right: none !important; }
-            .preview-side { width: 100% !important; padding: 20px 0 !important; }
-        }
-
-        /* 에디터 스타일 */
-        .editor-side { width: 420px; background: #222; padding: 20px; overflow-y: auto; border-right: 1px solid #333; z-index: 100; box-sizing: border-box; }
-        .preview-side { flex: 1; display: flex; justify-content: center; align-items: center; background: #000; overflow: auto; padding: 20px; }
-        .edit-group { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
-        .edit-group label { display: block; font-size: 11px; color: var(--main-color, #ff6b81); margin-bottom: 8px; font-family: 'Orbitron'; letter-spacing: 1px; }
-        .edit-group input, .edit-group textarea { width: 100%; background: #333; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box; font-size: 13px; margin-bottom: 5px; font-family: 'Pretendard'; }
-        .row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
-        .row span { font-size: 11px; color: #aaa; width: 80px; flex-shrink: 0; }
-        .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; transition: 0.2s; }
-        .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
-
-        /* 카드 설정 */
         :root {
             --bg-opacity: 0.7; 
             --main-color: #ff6b81;
@@ -37,63 +17,113 @@
             --bg-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
         }
 
+        body { background: #1a1a1a; margin: 0; display: flex; height: 100vh; font-family: 'Pretendard', sans-serif; color: #fff; overflow: hidden; }
+        @media (max-width: 900px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .editor-side { width: 100% !important; border-right: none !important; }
+            .preview-side { width: 100% !important; padding: 20px 0 !important; }
+        }
+
+        /* 에디터 사이드 */
+        .editor-side { width: 420px; background: #222; padding: 20px; overflow-y: auto; border-right: 1px solid #333; z-index: 100; box-sizing: border-box; flex-shrink: 0; }
+        .edit-group { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
+        .edit-group label { display: block; font-size: 11px; color: var(--main-color); margin-bottom: 8px; font-family: 'Orbitron'; letter-spacing: 1px; }
+        .edit-group input, .edit-group textarea { width: 100%; background: #333; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box; font-size: 13px; margin-bottom: 5px; font-family: 'Pretendard'; }
+        .row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
+        .row span { font-size: 11px; color: #aaa; width: 80px; flex-shrink: 0; }
+        .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; }
+        .btn-save { background: var(--main-color); color: #fff; }
+
+        /* 프리뷰 사이드 */
+        .preview-side { flex: 1; display: flex; justify-content: center; align-items: center; background: #000; overflow: auto; padding: 20px; }
+
+        /* 카드 메인 디자인 원복 */
         .card {
             width: 100%; max-width: 440px; aspect-ratio: 440 / 850;
             margin: 0 auto; border: 1px solid var(--main-color);
             position: relative; overflow: hidden; display: flex; flex-direction: column; background: #000;
         }
 
-        /* 3D 모션의 주인공: 배경 레이어 */
         .bg-layer {
-            position: absolute; 
-            top: -10%; left: -10%; width: 120%; height: 120%;
-            background-image: var(--bg-image); 
-            background-size: cover; 
-            background-position: center;
-            z-index: 0; 
-            will-change: transform;
-            transition: transform 0.2s ease-out; /* 부드러운 움직임 */
+            position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
+            background-image: var(--bg-image); background-size: cover; background-position: center;
+            z-index: 0; will-change: transform; transition: transform 0.2s ease-out;
+        }
+        .bg-layer::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(255, 107, 129, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 107, 129, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
         .overlay {
             position: absolute; inset: 0; background: rgba(255, 255, 255, var(--bg-opacity));
             display: flex; flex-direction: column; backdrop-filter: saturate(140%); z-index: 1;
-            pointer-events: none; /* 오버레이가 마우스 이벤트를 가로막지 않게 함 */
         }
 
-        header, main, footer { pointer-events: auto; } /* 내부 콘텐츠는 다시 클릭 가능하게 */
+        /* 데코레이션 원복 */
+        .overlay::before, .overlay::after, .card::after { content: ''; position: absolute; width: 15px; height: 15px; border: 2px solid var(--main-color); z-index: 10; pointer-events: none; }
+        .overlay::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+        .overlay::after { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+        .card::after { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
 
-        header { padding: 30px 30px 15px; border-bottom: 1px solid var(--main-color); }
-        .grade { font-family: 'Orbitron'; font-size: 0.75rem; color: var(--main-color); font-weight: 800; }
-        .code-name-wrap { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--main-color); font-weight: 900; margin: 0; }
-        main { flex: 1; padding: 25px 30px; overflow-y: auto; }
-        .quote-card-unit { margin-bottom: 22px; padding: 15px 18px; background: rgba(255, 107, 129, 0.05); border: 1px solid rgba(255, 107, 129, 0.2); }
-        .card-quote { font-family: 'Pretendard'; font-size: 0.9rem; color: var(--main-color); font-weight: 700; line-height: 1.5; margin: 0; }
+        header { padding: 30px 30px 15px; border-bottom: 1px solid var(--main-color); position: relative; }
+        .sys-log { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--main-color); letter-spacing: 2px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .sys-load-bar { width: 60px; height: 2px; background: rgba(255, 107, 129, 0.15); position: relative; overflow: hidden; }
+        .sys-load-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--main-color); animation: loading 2s infinite ease-in-out; }
+        
+        .grade { font-family: 'Orbitron'; font-size: 0.75rem; color: var(--main-color); font-weight: 800; letter-spacing: 1px; line-height: 1; margin: 0; }
+        .code-name-wrap { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--main-color); font-weight: 900; line-height: 1; margin: 0; }
+
+        main { flex: 1; padding: 25px 30px; overflow-y: auto; background-image: repeating-linear-gradient(0deg, rgba(255, 107, 129, 0.02) 0px, rgba(255, 107, 129, 0.02) 1px, transparent 1px, transparent 3px); }
+        .quote-card-unit { margin-bottom: 22px; position: relative; padding: 15px 18px; background: rgba(255, 107, 129, 0.05); border: 1px solid rgba(255, 107, 129, 0.2); }
+        .card-catch { font-family: 'JetBrains Mono'; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 1px; opacity: 0.7; }
+        .card-quote { font-family: 'Pretendard'; font-size: 0.9rem; color: var(--main-color); font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; margin: 0; }
+
+        .data-row { margin-bottom: 20px; }
         .label { font-family: 'Orbitron'; font-size: 0.7rem; color: var(--main-color); font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
-        .value { font-family: 'Pretendard'; font-size: 0.85rem; color: var(--text-color); font-weight: 500; line-height: 1.5; padding-left: 8px; text-align: justify; word-break: keep-all; }
+
+        .value { font-family: 'Pretendard'; font-size: 0.85rem; color: var(--text-color); font-weight: 500; line-height: 1.5; letter-spacing: -0.02em; padding-left: 8px; word-break: keep-all; }
+        
         .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 15px; margin-top: 8px; position: relative; }
         .ability-box::after { content: attr(data-label); position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono'; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
-        footer { padding: 15px 30px; font-family: 'JetBrains Mono'; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; }
+
+        footer { padding: 15px 30px; font-family: 'JetBrains Mono'; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 107, 129, 0.05); }
+        .sys-beat { width: 4px; height: 4px; background: var(--main-color); animation: blink 1s infinite steps(1); }
+
+        @keyframes loading { 0% { left: -100%; } 100% { left: 100%; } }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
     </style>
 </head>
 <body>
 
 <div class="editor-side">
-    <h2 style="font-family: 'Orbitron'; color: var(--main-color);">SYSTEM EDITOR</h2>
+    <h2 style="font-family: 'Orbitron'; color: var(--main-color);">CONTROL PANEL</h2>
     <div class="edit-group">
-        <label>SETTINGS</label>
+        <label>SYSTEM SETTING</label>
         <div class="row"><span>Opacity</span><input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7"></div>
         <div class="row"><span>Text Color</span><input type="color" id="c-text" value="#111111"></div>
-        <div class="row"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="이미지 주소"></div>
+        <div class="row"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..."></div>
         <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*"></div>
     </div>
     <div class="edit-group">
-        <label>TEXT DATA</label>
+        <label>HEADER IDENTITY</label>
+        <input type="text" id="in-tag" value="Fearless•HQ">
+        <input type="text" id="in-grade" value="S+ CLASS SENTINEL">
         <input type="text" id="in-name" value="CODE NAME: LOVE">
-        <textarea id="in-quote">"사랑은 가장 강력한 무기다."</textarea>
-        <input type="text" id="v-1" value="기본 정보 데이터 입력">
-        <textarea id="v-2">프리텐다드 폰트가 적용된 가독성 높은 본문입니다.</textarea>
+    </div>
+    <div class="edit-group">
+        <label>QUOTE SECTION</label>
+        <input type="text" id="in-catch" value="// LOG_SYSTEM_ACTIVE">
+        <textarea id="in-quote">"사랑은 가장 완벽한 형태의 구속이다."</textarea>
+    </div>
+    <div class="edit-group">
+        <label>DATA INPUT</label>
+        <input type="text" id="l-1" value="BASIC_INFO">
+        <input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬">
+        <input type="text" id="l-2" value="APPEARANCE">
+        <textarea id="v-2">가독성이 개선된 프리텐다드 본문 영역입니다.</textarea>
         <input type="text" id="in-power-label" value="POWER_DATA">
     </div>
     <button id="btn-save" class="btn btn-save">SAVE PNG</button>
@@ -104,23 +134,29 @@
         <div class="bg-layer" id="bg-target"></div>
         <div class="overlay">
             <header>
-                <span class="grade">S+ CLASS SENTINEL</span>
+                <div class="sys-log"><span id="out-tag">Fearless•HQ</span><div class="sys-load-bar"></div></div>
+                <span class="grade" id="out-grade">S+ CLASS SENTINEL</span>
                 <h1 class="code-name-wrap" id="out-name">CODE NAME: LOVE</h1>
             </header>
             <main>
                 <div class="quote-card-unit">
-                    <p class="card-quote" id="out-quote">"사랑은 가장 강력한 무기다."</p>
+                    <span class="card-catch" id="out-catch">// LOG_SYSTEM_ACTIVE</span>
+                    <p class="card-quote" id="out-quote">"사랑은 가장 완벽한 형태의 구속이다."</p>
                 </div>
-                <div class="data-row"><span class="label">INFO_01</span><div class="value" id="out-v1">기본 정보 데이터 입력</div></div>
-                <div class="data-row"><span class="label">INFO_02</span><div class="value" id="out-v2">프리텐다드 폰트가 적용된 가독성 높은 본문입니다.</div></div>
+                <div class="data-row"><span class="label" id="out-l1">BASIC_INFO</span><div class="value" id="out-v1">연하진 / 26세 / 남성 / 센티넬</div></div>
+                <div class="data-row"><span class="label" id="out-l2">APPEARANCE</span><div class="value" id="out-v2">가독성이 개선된 프리텐다드 본문 영역입니다.</div></div>
                 <div class="data-row">
-                    <span class="label">POWER_STATUS</span>
+                    <span class="label">ABILITY_SPEC</span>
                     <div class="ability-box" id="out-ability-box" data-label="POWER_DATA">
-                        <div class="value">특별 능력에 대한 세부 설명 영역입니다.</div>
+                        <div class="value">능력 세부 정보 영역 (디자인 원복 완료)</div>
                     </div>
                 </div>
             </main>
-            <footer><span>STATUS: STABLE</span><span>ENCRYPTION: ACTIVE</span></footer>
+            <footer>
+                <span>STATUS: STABLE</span>
+                <div class="sys-beat"></div>
+                <span>ENCRYPTION: ACTIVE</span>
+            </footer>
         </div>
     </div>
 </div>
@@ -129,47 +165,37 @@
     const bgTarget = document.getElementById('bg-target');
     const container = document.getElementById('motion-container');
 
-    // [핵심] 마우스 움직임에 따라 즉각 반응 (어디서든 작동)
+    // 마우스 추적 (자동 흔들림)
     container.addEventListener('mousemove', (e) => {
         const rect = container.getBoundingClientRect();
-        
-        // 중앙으로부터의 거리 계산
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        // 이동 강도 조절 (숫자가 작을수록 많이 움직임)
-        const moveX = (x - centerX) / 15;
-        const moveY = (y - centerY) / 15;
-        
-        // 배경 레이어만 이동 (1.1배 키워서 빈 공간 방지)
+        const moveX = (e.clientX - rect.left - rect.width / 2) / 15;
+        const moveY = (e.clientY - rect.top - rect.height / 2) / 15;
         bgTarget.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
     });
 
-    // 마우스가 나가면 제자리로
     container.addEventListener('mouseleave', () => {
         bgTarget.style.transform = `translate(0, 0) scale(1.1)`;
     });
 
-    // 데이터 동기화 로직
     function up() {
         document.documentElement.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
         document.documentElement.style.setProperty('--text-color', document.getElementById('c-text').value);
+        
+        document.getElementById('out-tag').innerText = document.getElementById('in-tag').value;
+        document.getElementById('out-grade').innerText = document.getElementById('in-grade').value;
         document.getElementById('out-name').innerText = document.getElementById('in-name').value;
+        document.getElementById('out-catch').innerText = document.getElementById('in-catch').value;
         document.getElementById('out-quote').innerText = document.getElementById('in-quote').value;
+        document.getElementById('out-l1').innerText = document.getElementById('l-1').value;
         document.getElementById('out-v1').innerText = document.getElementById('v-1').value;
+        document.getElementById('out-l2').innerText = document.getElementById('l-2').value;
         document.getElementById('out-v2').innerText = document.getElementById('v-2').value;
         document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
     }
 
-    // 이벤트 리스너 통합 관리
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('input, textarea').forEach(inpt => {
-            inpt.addEventListener('input', up);
-        });
-
+        document.querySelectorAll('input, textarea').forEach(inpt => inpt.addEventListener('input', up));
+        
         document.getElementById('in-bg-file').addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -183,7 +209,7 @@
         });
 
         document.getElementById('btn-save').addEventListener('click', () => {
-            bgTarget.style.transform = "translate(0,0) scale(1)"; // 저장 시 정중앙
+            bgTarget.style.transform = "translate(0,0) scale(1)";
             html2canvas(document.getElementById('capture-area'), { useCORS: true, scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'sentinel-card.png';
@@ -191,10 +217,8 @@
                 link.click();
             });
         });
-
         up();
     });
 </script>
-
 </body>
 </html>
