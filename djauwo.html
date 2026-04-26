@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR (RESPONSIVE)</title>
+    <title>HUD MASTER EDITOR (CLEAN OUTPUT)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
     <style>
-        /* 편집기 레이아웃 유지 및 모바일 대응 */
+        /* 편집기 레이아웃 및 모바일 대응 */
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
         
         @media (max-width: 900px) {
@@ -29,10 +29,9 @@
 
         :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
 
-        /* [HUD 디자인 - 반응형 적용 버전] */
+        /* [HUD 디자인] */
         .hud-wrapper, .hud-wrapper * { box-sizing: border-box; outline: none !important; }
         .hud-wrapper { 
-            /* 너비를 100%로 하고 최대 너비를 고정하여 모바일에서 안 잘리게 설정 */
             width: 100%; 
             max-width: 480px; 
             background: #0a000a; font-family: 'Rajdhani', sans-serif; 
@@ -40,7 +39,7 @@
             border: 2px solid var(--main-color); 
             box-shadow: 0 0 20px rgba(var(--main-rgb), 0.4); 
             margin: 0 auto; position: relative; color: #fff;
-            word-break: break-all; /* 긴 텍스트 줄바꿈 강제 */
+            word-break: break-all;
         }
         .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
         
@@ -54,7 +53,6 @@
         
         .hud-body { padding: 24px; }
         
-        /* 모바일에서 여백 살짝 조정 */
         @media (max-width: 480px) {
             .hud-header, .hud-body { padding: 18px; }
             .subject { font-size: 1.3rem; }
@@ -204,8 +202,6 @@
     async function downloadClean() {
         const hud = document.getElementById('hud');
         await document.fonts.ready;
-        
-        // 캡처 시에는 가로폭을 480px로 고정하여 고화질 추출
         const originalWidth = hud.style.width;
         hud.style.width = '480px';
 
@@ -220,15 +216,16 @@
             link.download = 'hud_clean.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
-            hud.style.width = originalWidth; // 캡처 후 복구
+            hud.style.width = originalWidth;
         });
     }
 
     function copy() {
         const clone = document.getElementById('hud').cloneNode(true);
         const style = document.querySelector('style').innerHTML;
-        // 복사된 코드에도 반응형 스타일이 포함되도록 래퍼 추가
-        navigator.clipboard.writeText(`<div><style>${style}<\/style><div style="display:flex; justify-content:center; background:#000; padding:10px;">${clone.outerHTML}</div><\/div>`).then(()=>alert('복사 완료!'));
+        // 복사 코드 수정: 외부 검은 상자와 패딩을 제거하여 카드만 나오게 함
+        const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden;">${clone.outerHTML}</div><\/div>`;
+        navigator.clipboard.writeText(cleanCode).then(()=>alert('복사 완료!'));
     }
     up();
 </script>
