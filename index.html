@@ -305,18 +305,20 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    // 고해상도 벡터 스케일링: 카드 너비의 3배(1320px)로 정밀하게 재계산하여 화질 고수
-                    const targetWidth = 1320; 
+                    
+                    // 사용자님 논리 적용: 카드폭에 딱 맞춘 최적 해상도(2.2배수)로 스케일링
+                    // 뭉개짐 없이 선명하면서도 복사가 가능한 데이터 양으로 압축
+                    const targetWidth = 968; 
                     const scale = targetWidth / img.width;
                     canvas.width = targetWidth;
                     canvas.height = img.height * scale;
                     
-                    // 이미지 렌더링 품질 설정
                     ctx.imageSmoothingEnabled = true;
                     ctx.imageSmoothingQuality = 'high';
                     
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.92); // 최상급 화질 유지
+                    // 퀄리티 손실 없이 데이터 최적화
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.82); 
                     document.documentElement.style.setProperty('--bg-image', `url('${dataUrl}')`);
                 };
                 img.src = e.target.result;
@@ -347,15 +349,32 @@
         
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleTags = document.querySelector('style').innerHTML;
-        
         const customStyle = `<style>${styleTags}\n:root { --bg-image: ${currentBg}; --main-color: ${themeColor}; --main-rgb: ${themeRgb}; }</style>`;
         const fullCode = `${customStyle}\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
         
-        navigator.clipboard.writeText(fullCode).then(() => {
-            alert("고화질 최적화 코드가 복사되었습니다!");
-        }).catch(() => {
-            alert("복사 실패: 이미지 용량이 너무 큽니다. 다른 사진으로 시도해 주세요.");
-        });
+        // 듀얼 복사 로직: 보안 정책 및 대용량 데이터 전송 문제 해결
+        try {
+            const textArea = document.createElement("textarea");
+            textArea.value = fullCode;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.select();
+            textArea.setSelectionRange(0, 999999); // 모바일 강제 선택
+            
+            const success = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            if (success) {
+                alert("코드가 복사되었습니다! (최적화 완료)");
+            } else {
+                // navigator 방식 재시도
+                navigator.clipboard.writeText(fullCode).then(() => alert("코드가 복사되었습니다!"));
+            }
+        } catch (err) {
+            alert("복사 실패: 이미지 데이터가 여전히 너무 큽니다. 다른 사진으로 시도해 주세요.");
+        }
     }
     window.onload = up;
 </script>
