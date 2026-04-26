@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR (CLEAN OUTPUT)</title>
+    <title>HUD MASTER EDITOR (RESPONSIVE RATIO)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
@@ -59,25 +59,25 @@
 
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
         
-        /* 이미지 화질 유지 로직: 벡터 방식으로 크기 제어 */
+        /* 이미지 비율 유지 로직 수정: 고정 높이 제거, object-fit 제거 */
         .image-card { 
             width: 100%; 
-            height: 260px; /* 고정 높이 제공하여 큰 이미지 대응 */
             border-radius: 4px; 
             overflow: hidden; 
             border: 1px solid rgba(var(--main-rgb), 0.4); 
             position: relative; 
             background: #000; 
+            display: flex; /* 이미지가 영역을 꽉 채우도록 설정 */
+            justify-content: center;
+            align-items: center;
         }
         .image-card img { 
             width: 100%; 
-            height: 100%; 
-            object-fit: cover; /* 비율 유지하며 꽉 채움 */
-            object-position: center;
+            height: auto; /* 이미지 원본 비율에 맞춰 높이 자동 조절 */
             display: block; 
             filter: brightness(0.9) contrast(1.1); 
             border: none;
-            image-rendering: -webkit-optimize-contrast; /* 선명도 보정 */
+            image-rendering: -webkit-optimize-contrast;
         }
         
         .rank-overlay { 
@@ -146,7 +146,7 @@
         <textarea id="t-hd" oninput="up()" style="margin-top:5px">폭주 기록: ?회 / 애정 결핍 시 발생. 주변의 영혼을 말려 죽이는 ‘대규모 정서 초토화’ 발생 가능성이 지극히 높음.</textarea>
         <input type="text" id="t-foot" value="© GMB NET. HUD_UI_LEVEL_7. ALL RIGHTS RESERVED." oninput="up()" style="margin-top:5px">
     </div>
-    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (ULTRA HQ)</button>
+    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (ORIGINAL RATIO)</button>
     <button class="btn-copy" onclick="copy()">COPY HUD CODE</button>
 </div>
 
@@ -240,20 +240,19 @@
         hud.style.width = '480px';
 
         html2canvas(hud, {
-            scale: 4, // 화질을 위해 스케일 업
+            scale: 4, // 화질을 위해 스케일 업 유지
             useCORS: true,
             backgroundColor: null,
             removeContainer: true,
             imageTimeout: 0,
             logging: false,
             onclone: (clonedDoc) => {
-                // 복제된 문서에서도 이미지 화질 유지 설정
                 const img = clonedDoc.getElementById('o-img');
                 if(img) img.style.imageRendering = 'auto';
             }
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_hq_output.png';
+            link.download = 'hud_ratio_output.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
             hud.style.width = originalWidth;
@@ -268,7 +267,7 @@
         const style = document.querySelector('style').innerHTML;
         const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden; background:#000; padding:20px 0;">${hudClone.outerHTML}</div><\/div>`;
         
-        navigator.clipboard.writeText(cleanCode).then(()=>alert('고해상도 이미지 포함 코드 복사 완료!'));
+        navigator.clipboard.writeText(cleanCode).then(()=>alert('비율 유지 이미지 포함 코드 복사 완료!'));
     }
     up();
 </script>
