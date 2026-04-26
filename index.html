@@ -229,7 +229,7 @@
                 <div class="data-row">
                     <span class="label" id="out-l5">ABILITY_SPEC</span>
                     <div class="ability-box" id="out-ability-box" data-label="POWER_DATA">
-                        <div class="value" id="out-v5-t" style="font-weight: bold; color: var(--main-color); margin-bottom: 5px; padding-left: 0;">[ Heart Manifestation ]</div>
+                        <div class="value" id="out-v5-t" style="font-weight: bold; color: var(--main-color) !important; margin-bottom: 5px; padding-left: 0;">[ Heart Manifestation ]</div>
                         <div class="value" id="out-v5-b" style="padding-left: 0;">전투시작 시, 손끝에서 형성되는 핑크빛 하트 에너지체...</div>
                     </div>
                 </div>
@@ -265,16 +265,16 @@
         const textColor = document.getElementById('c-text').value;
         const overlay = document.getElementById('out-overlay');
         
-        // [수정] 오버레이 배경색과 텍스트 색상을 인라인 스타일로 직접 주입 (복사용)
         const rgb = isDarkMode ? "0, 0, 0" : "255, 255, 255";
         overlay.style.backgroundColor = `rgba(${rgb}, ${opacity})`;
         
-        // 모든 밸류 텍스트 색상 실시간 반영
+        // [수정] 루프에서 타이틀(out-v5-t)은 제외하고 일반 텍스트만 글자색 변경
         document.querySelectorAll('.value').forEach(v => {
-            v.style.color = textColor;
+            if(v.id !== 'out-v5-t') {
+                v.style.color = textColor;
+            }
         });
 
-        // 나머지 필드 업데이트
         const ids = [['in-tag','out-tag'],['in-grade','out-grade'],['in-name','out-name'],['in-catch','out-catch'],['in-quote','out-quote'],['l-1','out-l1'],['v-1','out-v1'],['l-2','out-l2'],['v-2','out-v2'],['l-3','out-l3'],['v-3','out-v3'],['l-4','out-l4'],['v-4','out-v4'],['l-5','out-l5'],['v-5-t','out-v5-t'],['v-5-b','out-v5-b'],['f-l','out-f-l'],['f-r','out-f-r']];
         ids.forEach(pair => {
             const out = document.getElementById(pair[1]);
@@ -312,11 +312,10 @@
         const styleTags = document.querySelector('style').innerHTML;
         const currentBg = getComputedStyle(document.documentElement).getPropertyValue('--bg-image');
         
-        // 현재 배경 이미지 URL 정보까지 포함하여 스타일 재구성
         const customStyle = `<style>${styleTags} :root { --bg-image: ${currentBg}; }</style>`;
-        const fullCode = `${customStyle}\n<div style="display:flex; justify-content:center; overflow:hidden; padding:40px 0; background:#1a1a1a;">${cardHTML}</div>`;
+        const fullCode = `${customStyle}\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
         
-        navigator.clipboard.writeText(fullCode).then(() => alert("설정된 색상과 테마가 포함된 전체 코드가 복사되었습니다."));
+        navigator.clipboard.writeText(fullCode).then(() => alert("설정값이 포함된 카드 본체 코드가 복사되었습니다."));
     }
     window.onload = up;
 </script>
