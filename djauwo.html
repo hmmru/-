@@ -8,6 +8,7 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
     <style>
+        :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Pretendard', sans-serif; color: #fff; overflow: hidden; }
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; height: auto; }
@@ -24,8 +25,6 @@
         .row { display: flex; gap: 8px; margin-bottom: 5px; }
         .btn-extract { width: 100%; padding: 15px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
 
-        :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
-
         .hud-wrapper { 
             width: 100%; max-width: 480px; background: #0a000a; font-family: 'Pretendard', sans-serif; 
             border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); 
@@ -40,7 +39,7 @@
         .hud-body { padding: 24px; }
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
         .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.4); background: #000; position: relative; }
-        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); }
+        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); min-height: 200px; }
         .rank-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; padding: 4px 10px; font-size: 0.85rem; font-weight: 800; font-family: 'Rajdhani'; border-radius: 2px; }
         .info-section { display: grid; gap: 16px; }
         .info-item { border-left: 2px solid rgba(var(--main-rgb), 0.4); padding-left: 12px; }
@@ -64,7 +63,7 @@
     </div>
     <div class="edit-group">
         <label>IMAGE URL</label>
-        <input type="text" id="i-url" value="" oninput="up()">
+        <input type="text" id="i-url" value="" placeholder="추가 주소를 넣으면 덮어씌워집니다." oninput="up()">
         <label style="margin-top:10px">IMAGE FILE UPLOAD</label>
         <input type="file" accept="image/*" onchange="upImg(this)">
     </div>
@@ -83,7 +82,7 @@
         <div class="row"><input type="text" id="t-l2" value="DEPLOYMENT LOG" oninput="up()"><input type="text" id="t-v2" value="페어링 이력 있음" oninput="up()"></div>
     </div>
     <div class="edit-group">
-        <label>LOGS (EDIT TITLE HERE)</label>
+        <label>LOGS (AUDIO / BEHAVIOR LOG)</label>
         <input type="text" id="t-log-title" value="AUDIO / BEHAVIOR LOG" oninput="up()" style="margin-bottom:5px">
         <div class="row"><input type="text" id="t-qlab1" value="AUDIO_LOG >" oninput="up()"><input type="text" id="t-qlab2" value="AUDIO_LOG >" oninput="up()"></div>
         <textarea id="t-q1" oninput="up()" style="margin-bottom:5px">“으응, 가만히 있을게. 강아지는 나한테만 집중해요.”</textarea>
@@ -108,7 +107,7 @@
         <div class="hud-body">
             <div class="profile-viewer">
                 <div class="image-card">
-                    <img id="o-img" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D" crossorigin="anonymous">
+                    <img id="o-img" src="" crossorigin="anonymous">
                     <div class="rank-overlay" id="o-rank"></div>
                 </div>
             </div>
@@ -131,10 +130,20 @@
 </div>
 
 <script>
+    // 네가 준 주소를 JS에서 변수로 안전하게 선언
+    const defaultImg = "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D";
+    
+    window.onload = function() {
+        document.getElementById('o-img').src = defaultImg;
+        up();
+    };
+
     function upImg(input) { 
         if(input.files && input.files[0]) { 
             const r = new FileReader(); 
-            r.onload = e => document.getElementById('o-img').src = e.target.result;
+            r.onload = e => {
+                document.getElementById('o-img').src = e.target.result;
+            };
             r.readAsDataURL(input.files[0]); 
         } 
     }
@@ -149,8 +158,10 @@
         document.documentElement.style.setProperty('--main-color', color);
         document.documentElement.style.setProperty('--main-rgb', hexToRgb(color));
         
-        const imgUrlInput = document.getElementById('i-url').value;
-        if(imgUrlInput) document.getElementById('o-img').src = imgUrlInput;
+        const imgUrlInput = document.getElementById('i-url').value.trim();
+        if(imgUrlInput) {
+            document.getElementById('o-img').src = imgUrlInput;
+        }
         
         document.getElementById('o-tag').innerText = document.getElementById('t-tag').value;
         document.getElementById('o-subject').innerText = document.getElementById('t-subject').value;
@@ -181,14 +192,18 @@
     async function downloadClean() {
         const hud = document.getElementById('hud');
         await document.fonts.ready;
-        html2canvas(hud, { scale: 3, useCORS: true, backgroundColor: "#0a000a" }).then(canvas => {
+        html2canvas(hud, { 
+            scale: 3, 
+            useCORS: true, 
+            allowTaint: true,
+            backgroundColor: "#0a000a" 
+        }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_export.jpg';
+            link.download = 'hud_final.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
     }
-    up();
 </script>
 </body>
 </html>
