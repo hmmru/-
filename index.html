@@ -64,7 +64,7 @@
         .bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: var(--bg-image); background-size: cover; background-position: center;
-            z-index: 0; will-change: transform;
+            z-index: 0; will-change: transform; image-rendering: -webkit-optimize-contrast;
         }
 
         .bg-layer::before {
@@ -328,7 +328,7 @@
         const customStyle = `<style>${styleTags} :root { --bg-image: ${currentBg}; --main-color: ${themeColor}; --main-rgb: ${hexToRgb(themeColor)}; }</style>`;
         const fullCode = `${customStyle}\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
         
-        navigator.clipboard.writeText(fullCode).then(() => alert("설정된 테마 컬러가 포함된 코드가 복사되었습니다."));
+        navigator.clipboard.writeText(fullCode).then(() => alert("최적화된 코드가 복사되었습니다."));
     }
     window.onload = up;
 </script>
