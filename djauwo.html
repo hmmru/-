@@ -243,7 +243,7 @@
         const cleanCode = `<div><style>${styleContent}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden; padding:20px 0;">${hudClone.outerHTML}</div><\/div>`;
         
         navigator.clipboard.writeText(cleanCode).then(() => {
-            alert('색상 반영 및 검은 사각형 제거 완료! 코드 복사되었습니다.');
+            alert('코드 복사되었습니다.');
         }).catch(() => {
             const t = document.createElement("textarea"); document.body.appendChild(t);
             t.value = cleanCode; t.select(); document.execCommand('copy'); document.body.removeChild(t);
