@@ -88,11 +88,36 @@
 
 <script>
     let isWhite = false;
+
+    // 이미지 용량 및 화질 최적화 (Canvas Resize)
     function loadFile(e) {
-        const r = new FileReader();
-        r.onload = () => document.getElementById('outImg').src = r.result;
-        r.readAsDataURL(e.target.files[0]);
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const max_width = 800; // 화질 유지를 위한 적정 해상도
+                let width = img.width;
+                let height = img.height;
+
+                if (width > max_width) {
+                    height *= max_width / width;
+                    width = max_width;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // WebP나 JPEG 압축을 통해 용량 극소화 (HTML 복사 시 텍스트 길이 단축)
+                document.getElementById('outImg').src = canvas.toDataURL('image/jpeg', 0.7);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
     }
+
     function apply() {
         const c = document.getElementById('colorInput').value;
         const f = document.getElementById('ORIGINAL_FRAME');
@@ -163,7 +188,23 @@
             a.click(); 
         }); 
     }
-    function copy() { navigator.clipboard.writeText(document.getElementById('ORIGINAL_FRAME').outerHTML).then(() => alert("코드 복사됨")); }
+
+    // 보안 및 대용량 대응 복사 함수
+    function copy() { 
+        const html = document.getElementById('ORIGINAL_FRAME').outerHTML;
+        const temp = document.createElement("textarea");
+        temp.value = html;
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+            document.execCommand('copy');
+            alert("최종 코드가 클립보드에 복사되었습니다.");
+        } catch (e) {
+            console.error("복사 실패", e);
+            alert("복사에 실패했습니다. 브라우저 보안 설정을 확인하세요.");
+        }
+        document.body.removeChild(temp);
+    }
     apply();
 </script>
 </body>
