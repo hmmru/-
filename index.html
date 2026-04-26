@@ -46,7 +46,7 @@
 
         :root {
             --bg-opacity: 0.7; 
-            --overlay-color: 255, 255, 255; /* 초기 화이트 모드 */
+            --overlay-color: 255, 255, 255;
             --main-color: #ff6b81;
             --sub-color: #ffb7c5;
             --main-rgb: 255, 107, 129;
@@ -209,7 +209,7 @@
 <div class="preview-side">
     <div class="card" id="capture-area">
         <div class="bg-layer" id="bg-target"></div>
-        <div class="overlay">
+        <div class="overlay" id="out-overlay">
             <header>
                 <div class="sys-log"><span id="out-tag">Fearless•HQ</span><div class="sys-load-bar"></div></div>
                 <div class="title-box">
@@ -244,20 +244,12 @@
 </div>
 
 <script>
-    // [추가] 테마 토글 로직
     let isDarkMode = false;
     function toggleTheme() {
-        const root = document.documentElement;
         const themeUI = document.getElementById('theme-ui');
         isDarkMode = !isDarkMode;
-        
-        if(isDarkMode) {
-            root.style.setProperty('--overlay-color', '0, 0, 0');
-            themeUI.classList.add('btn-toggle-active');
-        } else {
-            root.style.setProperty('--overlay-color', '255, 255, 255');
-            themeUI.classList.remove('btn-toggle-active');
-        }
+        themeUI.classList.toggle('btn-toggle-active', isDarkMode);
+        up();
     }
 
     function toggleAnimation() {
@@ -269,8 +261,20 @@
 
     function up() {
         const root = document.documentElement;
-        root.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
-        root.style.setProperty('--text-color', document.getElementById('c-text').value);
+        const opacity = document.getElementById('c-opacity').value;
+        const textColor = document.getElementById('c-text').value;
+        const overlay = document.getElementById('out-overlay');
+        
+        // [수정] 오버레이 배경색과 텍스트 색상을 인라인 스타일로 직접 주입 (복사용)
+        const rgb = isDarkMode ? "0, 0, 0" : "255, 255, 255";
+        overlay.style.backgroundColor = `rgba(${rgb}, ${opacity})`;
+        
+        // 모든 밸류 텍스트 색상 실시간 반영
+        document.querySelectorAll('.value').forEach(v => {
+            v.style.color = textColor;
+        });
+
+        // 나머지 필드 업데이트
         const ids = [['in-tag','out-tag'],['in-grade','out-grade'],['in-name','out-name'],['in-catch','out-catch'],['in-quote','out-quote'],['l-1','out-l1'],['v-1','out-v1'],['l-2','out-l2'],['v-2','out-v2'],['l-3','out-l3'],['v-3','out-v3'],['l-4','out-l4'],['v-4','out-v4'],['l-5','out-l5'],['v-5-t','out-v5-t'],['v-5-b','out-v5-b'],['f-l','out-f-l'],['f-r','out-f-r']];
         ids.forEach(pair => {
             const out = document.getElementById(pair[1]);
@@ -306,8 +310,13 @@
     function copyHTML() {
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleTags = document.querySelector('style').innerHTML;
-        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden; padding:40px 0;">${cardHTML}</div>`;
-        navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
+        const currentBg = getComputedStyle(document.documentElement).getPropertyValue('--bg-image');
+        
+        // 현재 배경 이미지 URL 정보까지 포함하여 스타일 재구성
+        const customStyle = `<style>${styleTags} :root { --bg-image: ${currentBg}; }</style>`;
+        const fullCode = `${customStyle}\n<div style="display:flex; justify-content:center; overflow:hidden; padding:40px 0; background:#1a1a1a;">${cardHTML}</div>`;
+        
+        navigator.clipboard.writeText(fullCode).then(() => alert("설정된 색상과 테마가 포함된 전체 코드가 복사되었습니다."));
     }
     window.onload = up;
 </script>
