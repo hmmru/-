@@ -32,7 +32,6 @@
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-copy { background: #444; color: #fff; border: 1px solid #555; }
 
-        /* 스위치 스타일 */
         .switch-label {
             display: flex; align-items: center; justify-content: space-between;
             padding: 12px; background: #2a2a2a; border-radius: 4px; cursor: pointer;
@@ -54,11 +53,9 @@
             --bg-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
         }
 
-        /* 애니메이션 로직 */
-        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes bg-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-        .is-animating { animation: floating 4s ease-in-out infinite !important; }
-        .is-bg-animating { animation: bg-pulse 6s ease-in-out infinite !important; }
+        /* 배경만 움직이는 애니메이션 */
+        @keyframes bg-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .is-bg-animating { animation: bg-pulse 8s ease-in-out infinite !important; }
 
         .card {
             width: 100%; max-width: 440px; aspect-ratio: 440 / 850; height: auto; margin: 0 auto;
@@ -141,7 +138,7 @@
         <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*" onchange="changeBgFile(this)"></div>
         
         <div class="switch-label" onclick="toggleAnimation()">
-            FLOAT ANIMATION
+            BG IMAGE ANIMATION
             <div id="switch-ui" class="switch-btn"></div>
         </div>
     </div>
@@ -242,10 +239,8 @@
 
 <script>
     function toggleAnimation() {
-        const card = document.getElementById('capture-area');
         const bg = document.getElementById('bg-target');
         const switchUI = document.getElementById('switch-ui');
-        card.classList.toggle('is-animating');
         bg.classList.toggle('is-bg-animating');
         switchUI.classList.toggle('btn-toggle-active');
     }
@@ -275,15 +270,14 @@
     function saveImage() {
         const area = document.getElementById('capture-area');
         const bg = document.getElementById('bg-target');
-        const hadAni = area.classList.contains('is-animating');
-        area.classList.remove('is-animating');
+        const hadAni = bg.classList.contains('is-bg-animating');
         bg.classList.remove('is-bg-animating');
         html2canvas(area, { backgroundColor: null, useCORS: true, scale: 2, width: 440, height: 850 }).then(canvas => {
             const link = document.createElement('a');
             link.download = 'sentinel-card.png';
             link.href = canvas.toDataURL();
             link.click();
-            if(hadAni) { area.classList.add('is-animating'); bg.classList.add('is-bg-animating'); }
+            if(hadAni) bg.classList.add('is-bg-animating');
         });
     }
 
