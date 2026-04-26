@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR (FIXED)</title>
+    <title>HUD MASTER EDITOR</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
@@ -23,11 +23,9 @@
         .edit-group textarea { height: 60px; resize: none; }
         .row { display: flex; gap: 8px; margin-bottom: 5px; }
         .btn-extract { width: 100%; padding: 15px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .btn-copy { width: 100%; padding: 10px; background: transparent; color: var(--main-color); border: 1px solid var(--main-color); border-radius: 6px; font-family: 'Rajdhani'; font-size: 12px; cursor: pointer; margin-top: 10px; }
 
         :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
 
-        .hud-wrapper, .hud-wrapper * { box-sizing: border-box; outline: none !important; }
         .hud-wrapper { 
             width: 100%; max-width: 480px; background: #0a000a; font-family: 'Pretendard', sans-serif; 
             border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); 
@@ -36,12 +34,12 @@
         .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
         .hud-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(var(--main-rgb), 0.4); position: relative; }
         .category-tag { font-family: 'Share Tech Mono'; font-size: 12px; color: var(--main-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
-        .subject { font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); line-height: 1.2; }
+        .subject { font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 16px 0; line-height: 1.2; }
         .meta-container { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); line-height: 1.6; }
         .meta-container b { color: #fff; text-transform: uppercase; font-weight: 600; }
         .hud-body { padding: 24px; }
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
-        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.4); background: #000; }
+        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.4); background: #000; position: relative; }
         .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); }
         .rank-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; padding: 4px 10px; font-size: 0.85rem; font-weight: 800; font-family: 'Rajdhani'; border-radius: 2px; }
         .info-section { display: grid; gap: 16px; }
@@ -66,7 +64,9 @@
     </div>
     <div class="edit-group">
         <label>IMAGE URL</label>
-        <input type="text" id="i-url" value="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D" oninput="up()">
+        <input type="text" id="i-url" value="" oninput="up()">
+        <label style="margin-top:10px">IMAGE FILE UPLOAD</label>
+        <input type="file" accept="image/*" onchange="upImg(this)">
     </div>
     <div class="edit-group">
         <label>HEADER & META</label>
@@ -131,6 +131,14 @@
 </div>
 
 <script>
+    function upImg(input) { 
+        if(input.files && input.files[0]) { 
+            const r = new FileReader(); 
+            r.onload = e => document.getElementById('o-img').src = e.target.result;
+            r.readAsDataURL(input.files[0]); 
+        } 
+    }
+
     function hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : "255, 77, 141";
@@ -141,15 +149,18 @@
         document.documentElement.style.setProperty('--main-color', color);
         document.documentElement.style.setProperty('--main-rgb', hexToRgb(color));
         
-        const imgUrl = document.getElementById('i-url').value;
-        if(imgUrl) document.getElementById('o-img').src = imgUrl;
-
+        const imgUrlInput = document.getElementById('i-url').value;
+        if(imgUrlInput) document.getElementById('o-img').src = imgUrlInput;
+        
         document.getElementById('o-tag').innerText = document.getElementById('t-tag').value;
         document.getElementById('o-subject').innerText = document.getElementById('t-subject').value;
         
         const metaLines = document.getElementById('t-meta').value.split('\n');
         let metaHtml = '';
-        metaLines.forEach(l => { const p = l.split(' '); metaHtml += p.length > 1 ? `<b>${p[0]}</b> ${p.slice(1).join(' ')}<br>` : `${l}<br>`; });
+        metaLines.forEach(l => { 
+            const p = l.split(' '); 
+            metaHtml += p.length > 1 ? `<b>${p[0]}</b> ${p.slice(1).join(' ')}<br>` : `${l}<br>`; 
+        });
         document.getElementById('o-meta').innerHTML = metaHtml;
 
         document.getElementById('o-rank').innerText = document.getElementById('t-rank').value;
@@ -172,7 +183,7 @@
         await document.fonts.ready;
         html2canvas(hud, { scale: 3, useCORS: true, backgroundColor: "#0a000a" }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_fixed.jpg';
+            link.download = 'hud_export.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
