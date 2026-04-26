@@ -123,7 +123,7 @@
     </div>
     <div class="edit-group">
         <label>LOGS</label>
-        <input type="text" id="t-main-label" value="AUDIO / BEHAVIOR LOG" oninput="up()" style="margin-bottom:5px">
+        <input type="text" id="t-log-title" value="AUDIO / BEHAVIOR LOG" oninput="up()" style="margin-bottom:5px">
         <div class="row"><input type="text" id="t-qlab1" value="AUDIO_LOG >" oninput="up()"><input type="text" id="t-qlab2" value="AUDIO_LOG >" oninput="up()"></div>
         <textarea id="t-q1" oninput="up()" style="margin-bottom:5px">“으응, 가만히 있을게. 강아지는 나한테만 집중해요.”</textarea>
         <textarea id="t-q2" oninput="up()">“이건 딱딱하다... 차라리 네 목덜미를 깨물게 해줘.”</textarea>
@@ -156,7 +156,7 @@
                 <div class="info-item"><span class="info-label" id="o-l1"></span><div class="info-value" id="o-v1"></div></div>
                 <div class="info-item"><span class="info-label" id="o-l2"></span><div class="info-value" id="o-v2"></div></div>
                 <div class="info-item">
-                    <span class="info-label" id="o-main-label"></span>
+                    <span class="info-label" id="o-log-title"></span>
                     <div class="quote-log"><span class="quote-label" id="o-qlab1"></span><span id="o-q1"></span></div>
                     <div class="quote-log"><span class="quote-label" id="o-qlab2"></span><span id="o-q2"></span></div>
                 </div>
@@ -200,7 +200,10 @@ function hexToRgb(hex) {
         document.getElementById('o-v1').innerText = document.getElementById('t-v1').value;
         document.getElementById('o-l2').innerText = document.getElementById('t-l2').value;
         document.getElementById('o-v2').innerText = document.getElementById('t-v2').value;
-        document.getElementById('o-main-label').innerText = document.getElementById('t-main-label').value;
+        
+        // 로그 제목 연동
+        document.getElementById('o-log-title').innerText = document.getElementById('t-log-title').value;
+        
         document.getElementById('o-qlab1').innerText = document.getElementById('t-qlab1').value;
         document.getElementById('o-qlab2').innerText = document.getElementById('t-qlab2').value;
         document.getElementById('o-q1').innerText = document.getElementById('t-q1').value;
