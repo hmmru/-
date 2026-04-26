@@ -242,45 +242,13 @@
 </div>
 
 <script>
+    // [중요] 변수 선언 및 초기화
     let isTiltEnabled = false;
     const bgLayer = document.getElementById('bg-motion-layer');
     const container = document.getElementById('tilt-container');
     const tiltBtn = document.getElementById('tilt-toggle-btn');
 
-    // [수정] 버튼 클릭 시 상태 반전 로직 (티스토리 호환형)
-    function toggleTilt() {
-        isTiltEnabled = !isTiltEnabled;
-        if (isTiltEnabled) {
-            tiltBtn.innerText = "3D BG MOTION: ON";
-            tiltBtn.classList.add('active');
-            bgLayer.style.transform = "scale(1.1)";
-            // 모바일 권한 요청
-            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission();
-            }
-        } else {
-            tiltBtn.innerText = "3D BG MOTION: OFF";
-            tiltBtn.classList.remove('active');
-            bgLayer.style.transform = "translate(0, 0) scale(1.0)";
-        }
-    }
-
-    // 마우스 이동 이벤트
-    container.addEventListener('mousemove', (e) => {
-        if (!isTiltEnabled) return;
-        const rect = container.getBoundingClientRect();
-        const moveX = (e.clientX - rect.left - rect.width / 2) / 20;
-        const moveY = (e.clientY - rect.top - rect.height / 2) / 20;
-        bgLayer.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
-    });
-
-    container.addEventListener('mouseleave', () => {
-        if (isTiltEnabled) {
-            bgLayer.style.transform = `translate(0, 0) scale(1.1)`;
-        }
-    });
-
-    // 화면 동기화
+    // [중요] 동기화 함수
     function up() {
         const root = document.documentElement;
         root.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
@@ -306,16 +274,41 @@
         document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
     }
 
+    // [중요] 티스토리 보안 우회형 이벤트 연결
     document.addEventListener('DOMContentLoaded', () => {
-        // 티스토리가 onclick을 지워버리는 걸 방지하기 위해 여기서 연결
-        tiltBtn.addEventListener('click', toggleTilt);
-        document.getElementById('btn-save-png').addEventListener('click', saveImage);
-        document.getElementById('btn-copy-html').addEventListener('click', copyHTML);
-
+        // 모든 인풋 실시간 반영
         document.querySelectorAll('input, textarea').forEach(el => {
             el.addEventListener('input', up);
         });
 
+        // 3D 모션 토글 버튼 (onclick 대신 addEventListener 사용)
+        tiltBtn.addEventListener('click', () => {
+            isTiltEnabled = !isTiltEnabled;
+            if (isTiltEnabled) {
+                tiltBtn.innerText = "3D BG MOTION: ON";
+                tiltBtn.classList.add('active');
+                bgLayer.style.transform = "scale(1.1)";
+            } else {
+                tiltBtn.innerText = "3D BG MOTION: OFF";
+                tiltBtn.classList.remove('active');
+                bgLayer.style.transform = "translate(0, 0) scale(1.0)";
+            }
+        });
+
+        // 마우스 움직임 감지
+        container.addEventListener('mousemove', (e) => {
+            if (!isTiltEnabled) return;
+            const rect = container.getBoundingClientRect();
+            const moveX = (e.clientX - rect.left - rect.width / 2) / 18;
+            const moveY = (e.clientY - rect.top - rect.height / 2) / 18;
+            bgLayer.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
+        });
+
+        container.addEventListener('mouseleave', () => {
+            if (isTiltEnabled) bgLayer.style.transform = "translate(0, 0) scale(1.1)";
+        });
+
+        // 이미지 로직
         document.getElementById('in-bg-file').addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -328,29 +321,30 @@
             if(this.value.trim() !== "") document.documentElement.style.setProperty('--bg-image', `url('${this.value}')`);
         });
 
+        // 기타 버튼
+        document.getElementById('btn-save-png').addEventListener('click', () => {
+            const prev = bgLayer.style.transform;
+            bgLayer.style.transform = "translate(0, 0) scale(1.0)";
+            html2canvas(document.getElementById('capture-area'), { 
+                backgroundColor: null, useCORS: true, scale: 2, width: 440, height: 850
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'sentinel-card.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                if(isTiltEnabled) bgLayer.style.transform = prev;
+            });
+        });
+
+        document.getElementById('btn-copy-html').addEventListener('click', () => {
+            const cardHTML = document.getElementById('capture-area').outerHTML;
+            const styleTags = document.querySelector('style').innerHTML;
+            const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
+            navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
+        });
+
         up();
     });
-
-    function saveImage() {
-        const prevTransform = bgLayer.style.transform;
-        bgLayer.style.transform = "translate(0, 0) scale(1.0)";
-        html2canvas(document.getElementById('capture-area'), { 
-            backgroundColor: null, useCORS: true, scale: 2, width: 440, height: 850
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'sentinel-card.png';
-            link.href = canvas.toDataURL();
-            link.click();
-            if(isTiltEnabled) bgLayer.style.transform = prevTransform;
-        });
-    }
-
-    function copyHTML() {
-        const cardHTML = document.getElementById('capture-area').outerHTML;
-        const styleTags = document.querySelector('style').innerHTML;
-        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
-        navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
-    }
 </script>
 
 </body>
