@@ -305,13 +305,18 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    // 벡터 스케일링 방식: 카드 가로너비에 맞춰 픽셀 재계산 (용량 최적화)
-                    const targetWidth = 440;
+                    // 고해상도 벡터 스케일링: 카드 너비의 3배(1320px)로 정밀하게 재계산하여 화질 고수
+                    const targetWidth = 1320; 
                     const scale = targetWidth / img.width;
                     canvas.width = targetWidth;
                     canvas.height = img.height * scale;
+                    
+                    // 이미지 렌더링 품질 설정
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85); // 화질 고수하면서 용량 축소
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.92); // 최상급 화질 유지
                     document.documentElement.style.setProperty('--bg-image', `url('${dataUrl}')`);
                 };
                 img.src = e.target.result;
@@ -347,9 +352,9 @@
         const fullCode = `${customStyle}\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
         
         navigator.clipboard.writeText(fullCode).then(() => {
-            alert("최적화된 코드가 복사되었습니다. 다른 곳에 붙여넣어 보세요!");
+            alert("고화질 최적화 코드가 복사되었습니다!");
         }).catch(() => {
-            alert("복사 실패: 이미지 용량이 여전히 너무 큽니다.");
+            alert("복사 실패: 이미지 용량이 너무 큽니다. 다른 사진으로 시도해 주세요.");
         });
     }
     window.onload = up;
