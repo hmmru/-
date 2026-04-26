@@ -48,6 +48,7 @@
             --bg-opacity: 0.7; 
             --overlay-color: 255, 255, 255;
             --main-color: #ff6b81;
+            --main-rgb: 255, 107, 129;
             --text-color: #111111; 
             --bg-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
         }
@@ -64,13 +65,13 @@
         .bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: var(--bg-image); background-size: cover; background-position: center;
-            z-index: 0; will-change: transform; image-rendering: -webkit-optimize-contrast;
+            z-index: 0; will-change: transform;
         }
 
         .bg-layer::before {
             content: ''; position: absolute; inset: 0;
-            background-image: linear-gradient(rgba(var(--main-rgb, 255, 107, 129), 0.05) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(var(--main-rgb, 255, 107, 129), 0.05) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(var(--main-rgb), 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(var(--main-rgb), 0.05) 1px, transparent 1px);
             background-size: 20px 20px;
         }
 
@@ -88,18 +89,18 @@
 
         header { padding: 30px 30px 15px; border-bottom: 1px solid var(--main-color); position: relative; }
         .sys-log { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--main-color); letter-spacing: 2px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .sys-load-bar { width: 60px; height: 2px; background: rgba(var(--main-rgb, 255, 107, 129), 0.15); position: relative; overflow: hidden; }
+        .sys-load-bar { width: 60px; height: 2px; background: rgba(var(--main-rgb), 0.15); position: relative; overflow: hidden; }
         .sys-load-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--main-color); box-shadow: 0 0 8px var(--main-color); animation: loading 2s infinite ease-in-out; }
         
         .title-box { display: flex; flex-direction: column; gap: 0 !important; }
         .grade { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; color: var(--main-color); font-weight: 800; letter-spacing: 1px; line-height: 1; margin: 0 !important; }
         .code-name-wrap { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; color: var(--main-color); font-weight: 900; line-height: 1; word-break: break-all; margin: 0 !important; }
 
-        main { flex: 1; padding: 25px 30px; overflow-y: auto; background-image: repeating-linear-gradient(0deg, rgba(var(--main-rgb, 255, 107, 129), 0.02) 0px, rgba(var(--main-rgb, 255, 107, 129), 0.02) 1px, transparent 1px, transparent 3px); }
+        main { flex: 1; padding: 25px 30px; overflow-y: auto; background-image: repeating-linear-gradient(0deg, rgba(var(--main-rgb), 0.02) 0px, rgba(var(--main-rgb), 0.02) 1px, transparent 1px, transparent 3px); }
         main::-webkit-scrollbar { width: 2px; }
         main::-webkit-scrollbar-thumb { background: var(--main-color); }
 
-        .quote-card-unit { margin-bottom: 22px; position: relative; padding: 15px 18px; background: rgba(var(--main-rgb, 255, 107, 129), 0.05); border: 1px solid rgba(var(--main-rgb, 255, 107, 129), 0.2); }
+        .quote-card-unit { margin-bottom: 22px; position: relative; padding: 15px 18px; background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); }
         .quote-card-unit::before, .quote-card-unit::after { content: ''; position: absolute; width: 8px; height: 8px; border: 2px solid var(--main-color); }
         .quote-card-unit::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
         .quote-card-unit::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
@@ -113,10 +114,10 @@
 
         .value { font-family: 'Pretendard', sans-serif; font-size: 0.85rem; color: var(--text-color); font-weight: 500; line-height: 1.5; letter-spacing: -0.02em; padding-left: 8px; word-break: keep-all; text-align: justify; }
 
-        .ability-box { background: rgba(var(--main-rgb, 255, 107, 129), 0.08); border: 1px solid var(--main-color); padding: 15px; margin-top: 8px; position: relative; opacity: 0.9; }
+        .ability-box { background: rgba(var(--main-rgb), 0.08); border: 1px solid var(--main-color); padding: 15px; margin-top: 8px; position: relative; }
         .ability-box::after { content: attr(data-label); position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
 
-        footer { padding: 15px 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; background: rgba(var(--main-rgb, 255, 107, 129), 0.05); }
+        footer { padding: 15px 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); display: flex; justify-content: space-between; align-items: center; background: rgba(var(--main-rgb), 0.05); }
         .sys-beat { width: 4px; height: 4px; background: var(--main-color); animation: blink 1s infinite steps(1); }
 
         @keyframes loading { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
@@ -282,9 +283,7 @@
         overlay.style.backgroundColor = `rgba(${rgb}, ${opacity})`;
         
         document.querySelectorAll('.value').forEach(v => {
-            if(v.id !== 'out-v5-t') {
-                v.style.color = textColor;
-            }
+            if(v.id !== 'out-v5-t') v.style.color = textColor;
         });
 
         const ids = [['in-tag','out-tag'],['in-grade','out-grade'],['in-name','out-name'],['in-catch','out-catch'],['in-quote','out-quote'],['l-1','out-l1'],['v-1','out-v1'],['l-2','out-l2'],['v-2','out-v2'],['l-3','out-l3'],['v-3','out-v3'],['l-4','out-l4'],['v-4','out-v4'],['l-5','out-l5'],['v-5-t','out-v5-t'],['v-5-b','out-v5-b'],['f-l','out-f-l'],['f-r','out-f-r']];
@@ -297,10 +296,26 @@
     }
 
     function changeBgUrl(url) { if(url.trim() !== "") document.documentElement.style.setProperty('--bg-image', `url('${url}')`); }
+    
     function changeBgFile(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = e => document.documentElement.style.setProperty('--bg-image', `url('${e.target.result}')`);
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    // 벡터 스케일링 방식: 카드 가로너비에 맞춰 픽셀 재계산 (용량 최적화)
+                    const targetWidth = 440;
+                    const scale = targetWidth / img.width;
+                    canvas.width = targetWidth;
+                    canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85); // 화질 고수하면서 용량 축소
+                    document.documentElement.style.setProperty('--bg-image', `url('${dataUrl}')`);
+                };
+                img.src = e.target.result;
+            };
             reader.readAsDataURL(input.files[0]);
         }
     }
@@ -320,15 +335,22 @@
     }
 
     function copyHTML() {
-        const cardHTML = document.getElementById('capture-area').outerHTML;
-        const themeColor = document.getElementById('c-theme').value;
-        const styleTags = document.querySelector('style').innerHTML;
-        const currentBg = getComputedStyle(document.documentElement).getPropertyValue('--bg-image');
+        const root = document.documentElement;
+        const currentBg = root.style.getPropertyValue('--bg-image') || getComputedStyle(root).getPropertyValue('--bg-image');
+        const themeColor = root.style.getPropertyValue('--main-color') || '#ff6b81';
+        const themeRgb = root.style.getPropertyValue('--main-rgb') || '255, 107, 129';
         
-        const customStyle = `<style>${styleTags} :root { --bg-image: ${currentBg}; --main-color: ${themeColor}; --main-rgb: ${hexToRgb(themeColor)}; }</style>`;
+        const cardHTML = document.getElementById('capture-area').outerHTML;
+        const styleTags = document.querySelector('style').innerHTML;
+        
+        const customStyle = `<style>${styleTags}\n:root { --bg-image: ${currentBg}; --main-color: ${themeColor}; --main-rgb: ${themeRgb}; }</style>`;
         const fullCode = `${customStyle}\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
         
-        navigator.clipboard.writeText(fullCode).then(() => alert("최적화된 코드가 복사되었습니다."));
+        navigator.clipboard.writeText(fullCode).then(() => {
+            alert("최적화된 코드가 복사되었습니다. 다른 곳에 붙여넣어 보세요!");
+        }).catch(() => {
+            alert("복사 실패: 이미지 용량이 여전히 너무 큽니다.");
+        });
     }
     window.onload = up;
 </script>
