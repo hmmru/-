@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR</title>
+    <title>HUD MASTER EDITOR (CLEAN OUTPUT)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
     <style>
-        :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
+        /* 기본 폰트를 프리텐다드로 설정 */
         body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Pretendard', sans-serif; color: #fff; overflow: hidden; }
+        
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; height: auto; }
             .editor-panel { width: 100% !important; border-right: none !important; border-bottom: 1px solid #3d1c2d; }
             .preview-panel { padding: 20px 10px !important; }
         }
+
         .editor-panel { width: 450px; background: #1a111a; border-right: 1px solid #3d1c2d; padding: 20px; overflow-y: auto; box-sizing: border-box; flex-shrink: 0; }
         .preview-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; overflow: auto; background: #000; }
         .editor-panel h2 { font-family: 'Rajdhani'; color: var(--main-color); font-size: 1.2rem; margin-bottom: 20px; border-bottom: 2px solid var(--main-color); padding-bottom: 10px; }
@@ -24,33 +26,72 @@
         .edit-group textarea { height: 60px; resize: none; }
         .row { display: flex; gap: 8px; margin-bottom: 5px; }
         .btn-extract { width: 100%; padding: 15px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .btn-copy { width: 100%; padding: 10px; background: transparent; color: var(--main-color); border: 1px solid var(--main-color); border-radius: 6px; font-family: 'Rajdhani'; font-size: 12px; cursor: pointer; margin-top: 10px; }
 
+        :root { --main-color: #ff4d8d; --main-rgb: 255, 77, 141; }
+
+        /* [HUD 디자인] */
+        .hud-wrapper, .hud-wrapper * { box-sizing: border-box; outline: none !important; }
         .hud-wrapper { 
-            width: 100%; max-width: 480px; background: #0a000a; font-family: 'Pretendard', sans-serif; 
-            border-radius: 12px; overflow: hidden; border: 2px solid var(--main-color); 
-            box-shadow: 0 0 20px rgba(var(--main-rgb), 0.4); margin: 0 auto; position: relative; color: #fff;
+            width: 100%; 
+            max-width: 480px; 
+            background: #0a000a; font-family: 'Pretendard', 'Rajdhani', sans-serif; 
+            border-radius: 12px; overflow: hidden; 
+            border: 2px solid var(--main-color); 
+            box-shadow: 0 0 20px rgba(var(--main-rgb), 0.4); 
+            margin: 0 auto; position: relative; color: #fff;
+            word-break: keep-all; /* 한글 줄바꿈 자연스럽게 */
         }
         .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
+        
         .hud-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(var(--main-rgb), 0.4); position: relative; }
-        .category-tag { font-family: 'Share Tech Mono'; font-size: 12px; color: var(--main-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
-        .subject { font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 16px 0; line-height: 1.2; }
-        .meta-container { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); line-height: 1.6; }
+        .hud-header::after { content: ""; position: absolute; top: -2px; right: -2px; width: 30px; height: 30px; border-top: 4px solid var(--main-color); border-right: 4px solid var(--main-color); }
+        
+        .category-tag { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--main-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
+        
+        /* 제목: 적당한 자간 확보 */
+        .subject { font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); line-height: 1.2; letter-spacing: -0.02em; }
+        
+        .meta-container { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); line-height: 1.6; letter-spacing: -0.01em; }
         .meta-container b { color: #fff; text-transform: uppercase; font-weight: 600; }
+        
         .hud-body { padding: 24px; }
+        
+        @media (max-width: 480px) {
+            .hud-header, .hud-body { padding: 18px; }
+            .subject { font-size: 1.3rem; }
+        }
+
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
-        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.4); background: #000; position: relative; }
-        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); min-height: 200px; }
-        .rank-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; padding: 4px 10px; font-size: 0.85rem; font-weight: 800; font-family: 'Rajdhani'; border-radius: 2px; }
+        .image-card { width: 100%; border-radius: 4px; overflow: hidden; border: 1px solid rgba(var(--main-rgb), 0.4); position: relative; background: #000; line-height: 0; }
+        .image-card img { width: 100%; height: auto; display: block; filter: brightness(0.9) contrast(1.1); border: none; }
+        
+        .rank-overlay { 
+            position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; 
+            padding: 4px 10px; font-size: 0.85rem; font-weight: 800; line-height: 1; 
+            text-transform: uppercase; letter-spacing: 1px; z-index: 20; border-radius: 2px;
+            white-space: nowrap; display: inline-block; font-family: 'Rajdhani';
+        }
+        
         .info-section { display: grid; gap: 16px; }
-        .info-item { border-left: 2px solid rgba(var(--main-rgb), 0.4); padding-left: 12px; }
-        .info-label { font-family: 'Share Tech Mono'; font-size: 11px; color: var(--main-color); text-transform: uppercase; }
-        .info-value { font-size: 0.95rem; color: #ffffff; font-weight: 500; margin-top: 4px; }
-        .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.85); }
-        .quote-label { font-family: 'Share Tech Mono'; color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; font-weight: bold; }
+        .info-item { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid rgba(var(--main-rgb), 0.4); padding-left: 12px; }
+        .info-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--main-color); text-transform: uppercase; }
+        
+        /* 정보 텍스트: 프리텐다드 적용 및 가독성 조정 */
+        .info-value { font-size: 0.95rem; color: #ffffff; line-height: 1.4; font-weight: 500; letter-spacing: -0.015em; }
+        
+        /* 로그 메시지: 자간 복구 및 띄어쓰기 정상화 */
+        .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.85); line-height: 1.5; letter-spacing: -0.01em; }
+        .quote-label { font-family: 'Share Tech Mono', monospace; color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; font-weight: bold; }
+        
         .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(var(--main-rgb), 0.1); border: 1px solid var(--main-color); border-radius: 4px; position: relative; }
-        .hazard-title { font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; font-size: 0.85rem; }
-        .hazard-desc { font-size: 0.88rem; color: #fff; line-height: 1.6; padding-left: 20px; }
-        .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono'; font-size: 10px; color: rgba(var(--main-rgb), 0.5); }
+        .hazard-notice::before { content: ""; position: absolute; top: 0; left: 0; width: 10px; height: 100%; background: repeating-linear-gradient(45deg, var(--main-color), var(--main-color) 5px, transparent 5px, transparent 10px); }
+        .hazard-title { font-family: 'Pretendard'; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; letter-spacing: -0.01em; }
+        
+        /* 하단 설명: 가독성 중심 자간/행간 */
+        .hazard-desc { font-size: 0.88rem; color: #fff; line-height: 1.6; padding-left: 20px; letter-spacing: -0.01em; }
+        
+        .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(var(--main-rgb), 0.5); text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -62,10 +103,9 @@
         <input type="color" id="c-master" value="#ff4d8d" oninput="up()">
     </div>
     <div class="edit-group">
-        <label>IMAGE URL</label>
-        <input type="text" id="i-url" value="" placeholder="추가 주소를 넣으면 덮어씌워집니다." oninput="up()">
-        <label style="margin-top:10px">IMAGE FILE UPLOAD</label>
-        <input type="file" accept="image/*" onchange="upImg(this)">
+        <label>IMAGE URL / FILE</label>
+        <input type="text" id="i-url" placeholder="URL..." oninput="up()">
+        <input type="file" accept="image/*" onchange="upImg(this)" style="margin-top:5px">
     </div>
     <div class="edit-group">
         <label>HEADER & META</label>
@@ -82,8 +122,7 @@
         <div class="row"><input type="text" id="t-l2" value="DEPLOYMENT LOG" oninput="up()"><input type="text" id="t-v2" value="페어링 이력 있음" oninput="up()"></div>
     </div>
     <div class="edit-group">
-        <label>LOGS (AUDIO / BEHAVIOR LOG)</label>
-        <input type="text" id="t-log-title" value="AUDIO / BEHAVIOR LOG" oninput="up()" style="margin-bottom:5px">
+        <label>LOGS</label>
         <div class="row"><input type="text" id="t-qlab1" value="AUDIO_LOG >" oninput="up()"><input type="text" id="t-qlab2" value="AUDIO_LOG >" oninput="up()"></div>
         <textarea id="t-q1" oninput="up()" style="margin-bottom:5px">“으응, 가만히 있을게. 강아지는 나한테만 집중해요.”</textarea>
         <textarea id="t-q2" oninput="up()">“이건 딱딱하다... 차라리 네 목덜미를 깨물게 해줘.”</textarea>
@@ -94,20 +133,21 @@
         <textarea id="t-hd" oninput="up()" style="margin-top:5px">폭주 기록: ?회 / 애정 결핍 시 발생. 주변의 영혼을 말려 죽이는 ‘대규모 정서 초토화’ 발생 가능성이 지극히 높음.</textarea>
         <input type="text" id="t-foot" value="© GMB NET. HUD_UI_LEVEL_7. ALL RIGHTS RESERVED." oninput="up()" style="margin-top:5px">
     </div>
-    <button class="btn-extract" onclick="downloadClean()">EXTRACT JPG</button>
+    <button class="btn-extract" onclick="downloadClean()">EXTRACT JPG (NO BORDER)</button>
+    <button class="btn-copy" onclick="copy()">COPY HUD CODE</button>
 </div>
 
 <div class="preview-panel">
     <div class="hud-wrapper" id="hud">
         <div class="hud-header">
             <span class="category-tag" id="o-tag"></span>
-            <h1 class="subject"><span id="o-subject"></span></h1>
+            <h1 class="subject"><b><span id="o-subject" style="color:#fff"></span></b></h1>
             <div class="meta-container" id="o-meta"></div>
         </div>
         <div class="hud-body">
             <div class="profile-viewer">
                 <div class="image-card">
-                    <img id="o-img" src="" crossorigin="anonymous">
+                    <img id="o-img" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D" crossorigin="anonymous">
                     <div class="rank-overlay" id="o-rank"></div>
                 </div>
             </div>
@@ -115,7 +155,7 @@
                 <div class="info-item"><span class="info-label" id="o-l1"></span><div class="info-value" id="o-v1"></div></div>
                 <div class="info-item"><span class="info-label" id="o-l2"></span><div class="info-value" id="o-v2"></div></div>
                 <div class="info-item">
-                    <span class="info-label" id="o-log-title"></span>
+                    <span class="info-label">AUDIO / BEHAVIOR LOG</span>
                     <div class="quote-log"><span class="quote-label" id="o-qlab1"></span><span id="o-q1"></span></div>
                     <div class="quote-log"><span class="quote-label" id="o-qlab2"></span><span id="o-q2"></span></div>
                 </div>
@@ -130,25 +170,14 @@
 </div>
 
 <script>
-    // 네가 준 주소를 JS에서 변수로 안전하게 선언
-    const defaultImg = "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbya9Kl%2FdJMb990uNuJ%2FAAAAAAAAAAAAAAAAAAAAAFeCHaSgua63DKc4ITZvKgwFVyQg-LCcRd-Vo9Q_RRUa%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DqpLmcdo8J2uD17Vny5GWYtRs400%253D";
-    
-    window.onload = function() {
-        document.getElementById('o-img').src = defaultImg;
-        up();
-    };
-
     function upImg(input) { 
         if(input.files && input.files[0]) { 
             const r = new FileReader(); 
-            r.onload = e => {
-                document.getElementById('o-img').src = e.target.result;
-            };
+            r.onload = e => document.getElementById('o-img').src = e.target.result;
             r.readAsDataURL(input.files[0]); 
         } 
     }
-
-    function hexToRgb(hex) {
+function hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : "255, 77, 141";
     }
@@ -157,29 +186,19 @@
         const color = document.getElementById('c-master').value;
         document.documentElement.style.setProperty('--main-color', color);
         document.documentElement.style.setProperty('--main-rgb', hexToRgb(color));
-        
-        const imgUrlInput = document.getElementById('i-url').value.trim();
-        if(imgUrlInput) {
-            document.getElementById('o-img').src = imgUrlInput;
-        }
-        
+        const imgUrl = document.getElementById('i-url').value;
+        if(imgUrl) document.getElementById('o-img').src = imgUrl;
         document.getElementById('o-tag').innerText = document.getElementById('t-tag').value;
         document.getElementById('o-subject').innerText = document.getElementById('t-subject').value;
-        
         const metaLines = document.getElementById('t-meta').value.split('\n');
         let metaHtml = '';
-        metaLines.forEach(l => { 
-            const p = l.split(' '); 
-            metaHtml += p.length > 1 ? `<b>${p[0]}</b> ${p.slice(1).join(' ')}<br>` : `${l}<br>`; 
-        });
+        metaLines.forEach(l => { const p = l.split(' '); metaHtml += p.length > 1 ? `<b>${p[0]}</b> ${p.slice(1).join(' ')}<br>` : `${l}<br>`; });
         document.getElementById('o-meta').innerHTML = metaHtml;
-
         document.getElementById('o-rank').innerText = document.getElementById('t-rank').value;
         document.getElementById('o-l1').innerText = document.getElementById('t-l1').value;
         document.getElementById('o-v1').innerText = document.getElementById('t-v1').value;
         document.getElementById('o-l2').innerText = document.getElementById('t-l2').value;
         document.getElementById('o-v2').innerText = document.getElementById('t-v2').value;
-        document.getElementById('o-log-title').innerText = document.getElementById('t-log-title').value;
         document.getElementById('o-qlab1').innerText = document.getElementById('t-qlab1').value;
         document.getElementById('o-qlab2').innerText = document.getElementById('t-qlab2').value;
         document.getElementById('o-q1').innerText = document.getElementById('t-q1').value;
@@ -192,18 +211,31 @@
     async function downloadClean() {
         const hud = document.getElementById('hud');
         await document.fonts.ready;
-        html2canvas(hud, { 
-            scale: 3, 
-            useCORS: true, 
-            allowTaint: true,
-            backgroundColor: "#0a000a" 
+        const originalWidth = hud.style.width;
+        hud.style.width = '480px';
+
+        html2canvas(hud, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: "#0a000a", 
+            removeContainer: true,
+            logging: false,
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_final.jpg';
+            link.download = 'hud_clean.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
+            hud.style.width = originalWidth;
         });
     }
+
+    function copy() {
+        const clone = document.getElementById('hud').cloneNode(true);
+        const style = document.querySelector('style').innerHTML;
+        const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden;">${clone.outerHTML}</div><\/div>`;
+        navigator.clipboard.writeText(cleanCode).then(()=>alert('복사 완료!'));
+    }
+    up();
 </script>
 </body>
 </html>
