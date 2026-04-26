@@ -32,22 +32,18 @@
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-copy { background: #444; color: #fff; border: 1px solid #555; }
 
-        /* [추가] CSS 애니메이션 온오프 스위치 스타일 */
+        /* 스위치 스타일 */
         .switch-label {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px; background: #333; border-radius: 4px; cursor: pointer;
+            padding: 12px; background: #2a2a2a; border-radius: 4px; cursor: pointer;
             border: 1px solid #444; margin-top: 10px; font-family: 'Orbitron'; font-size: 11px; color: var(--main-color);
+            user-select: none;
         }
-        #ani-toggle { display: none; }
-        .switch-btn {
-            width: 40px; height: 20px; background: #555; border-radius: 20px; position: relative; transition: 0.3s;
-        }
-        .switch-btn::after {
-            content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
-            background: #fff; border-radius: 50%; transition: 0.3s;
-        }
-        #ani-toggle:checked + .switch-label .switch-btn { background: var(--main-color); }
-        #ani-toggle:checked + .switch-label .switch-btn::after { left: 22px; }
+        .switch-label:hover { background: #333; }
+        .switch-btn { width: 44px; height: 22px; background: #555; border-radius: 22px; position: relative; transition: 0.3s; pointer-events: none; }
+        .switch-btn::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: 0.3s; }
+        .btn-toggle-active { background: var(--main-color) !important; }
+        .btn-toggle-active::after { left: 25px !important; }
 
         :root {
             --bg-opacity: 0.7; 
@@ -58,43 +54,22 @@
             --bg-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
         }
 
-        /* [추가] 애니메이션 핵심 로직 */
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-        @keyframes bg-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        /* 스위치가 켜졌을 때만 작동 */
-        #ani-toggle:checked ~ .preview-side .card {
-            animation: floating 4s ease-in-out infinite;
-        }
-        #ani-toggle:checked ~ .preview-side .card .bg-layer {
-            animation: bg-pulse 6s ease-in-out infinite;
-        }
+        /* 애니메이션 로직 */
+        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes bg-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+        .is-animating { animation: floating 4s ease-in-out infinite !important; }
+        .is-bg-animating { animation: bg-pulse 6s ease-in-out infinite !important; }
 
         .card {
-            width: 100%; 
-            max-width: 440px; 
-            aspect-ratio: 440 / 850;
-            height: auto;
-            margin: 0 auto;
-            border: 1px solid var(--main-color);
-            position: relative; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; flex-shrink: 0;
-            background: #000;
-            transition: transform 0.5s ease-out;
+            width: 100%; max-width: 440px; aspect-ratio: 440 / 850; height: auto; margin: 0 auto;
+            border: 1px solid var(--main-color); position: relative; overflow: hidden; display: flex; flex-direction: column; 
+            box-sizing: border-box; flex-shrink: 0; background: #000;
         }
 
         .bg-layer {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: var(--bg-image);
-            background-size: cover; background-position: center;
-            z-index: 0;
-            will-change: transform;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: var(--bg-image); background-size: cover; background-position: center;
+            z-index: 0; will-change: transform;
         }
 
         .bg-layer::before {
@@ -133,9 +108,7 @@
         .quote-card-unit::before, .quote-card-unit::after { content: ''; position: absolute; width: 8px; height: 8px; border: 2px solid var(--main-color); }
         .quote-card-unit::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
         .quote-card-unit::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
-        
         .card-catch { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 1px; opacity: 0.7; }
-        
         .card-quote { font-family: 'Pretendard', sans-serif; font-size: 0.9rem; color: var(--main-color); font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; word-break: keep-all; margin: 0; }
 
         .data-row { margin-bottom: 20px; }
@@ -143,17 +116,7 @@
         .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
 
-        .value { 
-            font-family: 'Pretendard', sans-serif; 
-            font-size: 0.85rem; 
-            color: var(--text-color); 
-            font-weight: 500;
-            line-height: 1.5; 
-            letter-spacing: -0.02em; 
-            padding-left: 8px; 
-            word-break: keep-all; 
-            text-align: justify; 
-        }
+        .value { font-family: 'Pretendard', sans-serif; font-size: 0.85rem; color: var(--text-color); font-weight: 500; line-height: 1.5; letter-spacing: -0.02em; padding-left: 8px; word-break: keep-all; text-align: justify; }
 
         .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 15px; margin-top: 8px; position: relative; }
         .ability-box::after { content: attr(data-label); position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
@@ -167,8 +130,6 @@
 </head>
 <body>
 
-<input type="checkbox" id="ani-toggle">
-
 <div class="editor-side">
     <h2 style="font-family: 'Orbitron'; color: var(--main-color); margin-bottom: 20px; font-size: 1.2rem;">STATION CONTROL</h2>
     
@@ -179,10 +140,10 @@
         <div class="row" style="margin-top:10px;"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..." oninput="changeBgUrl(this.value)"></div>
         <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*" onchange="changeBgFile(this)"></div>
         
-        <label for="ani-toggle" class="switch-label">
+        <div class="switch-label" onclick="toggleAnimation()">
             FLOAT ANIMATION
-            <div class="switch-btn"></div>
-        </label>
+            <div id="switch-ui" class="switch-btn"></div>
+        </div>
     </div>
     
     <div class="edit-group">
@@ -244,7 +205,7 @@
 
 <div class="preview-side">
     <div class="card" id="capture-area">
-        <div class="bg-layer"></div>
+        <div class="bg-layer" id="bg-target"></div>
         <div class="overlay">
             <header>
                 <div class="sys-log"><span id="out-tag">Fearless•HQ</span><div class="sys-load-bar"></div></div>
@@ -280,72 +241,59 @@
 </div>
 
 <script>
+    function toggleAnimation() {
+        const card = document.getElementById('capture-area');
+        const bg = document.getElementById('bg-target');
+        const switchUI = document.getElementById('switch-ui');
+        card.classList.toggle('is-animating');
+        bg.classList.toggle('is-bg-animating');
+        switchUI.classList.toggle('btn-toggle-active');
+    }
+
     function up() {
         const root = document.documentElement;
         root.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
         root.style.setProperty('--text-color', document.getElementById('c-text').value);
-
-        const ids = [
-            ['in-tag', 'out-tag'], ['in-grade', 'out-grade'], ['in-name', 'out-name'],
-            ['in-catch', 'out-catch'], ['in-quote', 'out-quote'],
-            ['l-1', 'out-l1'], ['v-1', 'out-v1'],
-            ['l-2', 'out-l2'], ['v-2', 'out-v2'],
-            ['l-3', 'out-l3'], ['v-3', 'out-v3'],
-            ['l-4', 'out-l4'], ['v-4', 'out-v4'],
-            ['l-5', 'out-l5'], ['v-5-t', 'out-v5-t'], ['v-5-b', 'out-v5-b'],
-            ['f-l', 'out-f-l'], ['f-r', 'out-f-r']
-        ];
-
+        const ids = [['in-tag','out-tag'],['in-grade','out-grade'],['in-name','out-name'],['in-catch','out-catch'],['in-quote','out-quote'],['l-1','out-l1'],['v-1','out-v1'],['l-2','out-l2'],['v-2','out-v2'],['l-3','out-l3'],['v-3','out-v3'],['l-4','out-l4'],['v-4','out-v4'],['l-5','out-l5'],['v-5-t','out-v5-t'],['v-5-b','out-v5-b'],['f-l','out-f-l'],['f-r','out-f-r']];
         ids.forEach(pair => {
             const out = document.getElementById(pair[1]);
             const input = document.getElementById(pair[0]);
             if(out && input) out.innerText = input.value;
         });
-
         document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
     }
 
-    function changeBgUrl(url) {
-        if(url.trim() !== "") {
-            document.documentElement.style.setProperty('--bg-image', `url('${url}')`);
-        }
-    }
-
+    function changeBgUrl(url) { if(url.trim() !== "") document.documentElement.style.setProperty('--bg-image', `url('${url}')`); }
     function changeBgFile(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                document.documentElement.style.setProperty('--bg-image', `url('${e.target.result}')`);
-            };
+            reader.onload = e => document.documentElement.style.setProperty('--bg-image', `url('${e.target.result}')`);
             reader.readAsDataURL(input.files[0]);
         }
     }
 
     function saveImage() {
         const area = document.getElementById('capture-area');
-        // 저장 시 애니메이션이 튀지 않도록 잠시 정지 후 캡처
-        html2canvas(area, { 
-            backgroundColor: null, 
-            useCORS: true, 
-            scale: 2,
-            width: 440,
-            height: 850
-        }).then(canvas => {
+        const bg = document.getElementById('bg-target');
+        const hadAni = area.classList.contains('is-animating');
+        area.classList.remove('is-animating');
+        bg.classList.remove('is-bg-animating');
+        html2canvas(area, { backgroundColor: null, useCORS: true, scale: 2, width: 440, height: 850 }).then(canvas => {
             const link = document.createElement('a');
             link.download = 'sentinel-card.png';
             link.href = canvas.toDataURL();
             link.click();
+            if(hadAni) { area.classList.add('is-animating'); bg.classList.add('is-bg-animating'); }
         });
     }
 
     function copyHTML() {
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleTags = document.querySelector('style').innerHTML;
-        // 복사 시에는 체크박스 온오프 상태를 포함할 수 없으므로 카드 본체와 스타일만 복사
         const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden; padding:40px 0;">${cardHTML}</div>`;
         navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
     }
+    window.onload = up;
 </script>
-
 </body>
 </html>
