@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HUD MASTER EDITOR (CLEAN OUTPUT)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;500;700&display=swap">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
     <style>
-        /* 편집기 레이아웃 및 모바일 대응 */
-        body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
+        /* 기본 폰트를 프리텐다드로 설정 */
+        body { background: #0a000a; margin: 0; display: flex; height: 100vh; font-family: 'Pretendard', sans-serif; color: #fff; overflow: hidden; }
         
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; height: auto; }
@@ -21,7 +22,7 @@
         .editor-panel h2 { font-family: 'Rajdhani'; color: var(--main-color); font-size: 1.2rem; margin-bottom: 20px; border-bottom: 2px solid var(--main-color); padding-bottom: 10px; }
         .edit-group { margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px solid #2a1a2a; }
         .edit-group label { display: block; font-size: 11px; color: var(--main-color); font-family: 'Share Tech Mono'; margin-bottom: 6px; letter-spacing: 1px; }
-        .edit-group input, .edit-group textarea { width: 100%; background: #2a1a2a; border: 1px solid #4a2a3a; color: #fff; padding: 10px; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
+        .edit-group input, .edit-group textarea { width: 100%; background: #2a1a2a; border: 1px solid #4a2a3a; color: #fff; padding: 10px; border-radius: 4px; font-size: 13px; box-sizing: border-box; font-family: 'Pretendard'; }
         .edit-group textarea { height: 60px; resize: none; }
         .row { display: flex; gap: 8px; margin-bottom: 5px; }
         .btn-extract { width: 100%; padding: 15px; background: var(--main-color); color: #fff; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; margin-top: 10px; }
@@ -34,12 +35,12 @@
         .hud-wrapper { 
             width: 100%; 
             max-width: 480px; 
-            background: #0a000a; font-family: 'Rajdhani', sans-serif; 
+            background: #0a000a; font-family: 'Pretendard', 'Rajdhani', sans-serif; 
             border-radius: 12px; overflow: hidden; 
             border: 2px solid var(--main-color); 
             box-shadow: 0 0 20px rgba(var(--main-rgb), 0.4); 
             margin: 0 auto; position: relative; color: #fff;
-            word-break: break-all;
+            word-break: keep-all; /* 한글 줄바꿈 자연스럽게 */
         }
         .hud-wrapper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(var(--main-rgb), 0.05) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; pointer-events: none; z-index: 10; }
         
@@ -48,18 +49,17 @@
         
         .category-tag { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--main-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
         
-        /* 제목 부분 자간 및 띄어쓰기 조정 */
-        .subject { font-size: 1.4rem; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); line-height: 1.1; letter-spacing: -0.04em; word-spacing: -0.1em; }
+        /* 제목: 적당한 자간 확보 */
+        .subject { font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 16px 0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); line-height: 1.2; letter-spacing: -0.02em; }
         
-        /* 메타 정보 텍스트 조정 */
-        .meta-container { font-size: 0.8rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5; letter-spacing: -0.02em; word-spacing: -0.05em; }
-        .meta-container b { color: #fff; text-transform: uppercase; }
+        .meta-container { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); line-height: 1.6; letter-spacing: -0.01em; }
+        .meta-container b { color: #fff; text-transform: uppercase; font-weight: 600; }
         
         .hud-body { padding: 24px; }
         
         @media (max-width: 480px) {
             .hud-header, .hud-body { padding: 18px; }
-            .subject { font-size: 1.25rem; }
+            .subject { font-size: 1.3rem; }
         }
 
         .profile-viewer { position: relative; margin-bottom: 24px; line-height: 0; }
@@ -70,26 +70,26 @@
             position: absolute; bottom: 8px; right: 8px; background: var(--main-color); color: #fff; 
             padding: 4px 10px; font-size: 0.85rem; font-weight: 800; line-height: 1; 
             text-transform: uppercase; letter-spacing: 1px; z-index: 20; border-radius: 2px;
-            white-space: nowrap; display: inline-block;
+            white-space: nowrap; display: inline-block; font-family: 'Rajdhani';
         }
         
         .info-section { display: grid; gap: 16px; }
         .info-item { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid rgba(var(--main-rgb), 0.4); padding-left: 12px; }
         .info-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--main-color); text-transform: uppercase; }
         
-        /* [수정] 일반 정보 텍스트 자간/행간/띄어쓰기 최적화 */
-        .info-value { font-size: 0.88rem; color: #ffffff; line-height: 1.35; letter-spacing: -0.05em; word-spacing: -0.15em; }
+        /* 정보 텍스트: 프리텐다드 적용 및 가독성 조정 */
+        .info-value { font-size: 0.95rem; color: #ffffff; line-height: 1.4; font-weight: 500; letter-spacing: -0.015em; }
         
-        /* [수정] 로그 메시지 자간/행간/띄어쓰기 최적화 */
-        .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 10px 12px; border-radius: 4px; margin-top: 6px; font-family: 'Noto Sans KR', sans-serif; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85); line-height: 1.4; letter-spacing: -0.06em; word-spacing: -0.2em; text-align: justify; }
-        .quote-label { font-family: 'Share Tech Mono', monospace; color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; font-weight: bold; letter-spacing: 0.5px; }
+        /* 로그 메시지: 자간 복구 및 띄어쓰기 정상화 */
+        .quote-log { background: rgba(var(--main-rgb), 0.05); border: 1px solid rgba(var(--main-rgb), 0.2); padding: 12px; border-radius: 4px; margin-top: 6px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.85); line-height: 1.5; letter-spacing: -0.01em; }
+        .quote-label { font-family: 'Share Tech Mono', monospace; color: var(--main-color); font-size: 10px; display: block; margin-bottom: 4px; font-weight: bold; }
         
         .hazard-notice { margin-top: 32px; padding: 16px; background: rgba(var(--main-rgb), 0.1); border: 1px solid var(--main-color); border-radius: 4px; position: relative; }
         .hazard-notice::before { content: ""; position: absolute; top: 0; left: 0; width: 10px; height: 100%; background: repeating-linear-gradient(45deg, var(--main-color), var(--main-color) 5px, transparent 5px, transparent 10px); }
-        .hazard-title { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; }
+        .hazard-title { font-family: 'Pretendard'; font-size: 0.85rem; font-weight: 700; color: var(--main-color); margin-bottom: 6px; padding-left: 20px; letter-spacing: -0.01em; }
         
-        /* [수정] 하단 위험 고지 설명 텍스트 최적화 */
-        .hazard-desc { font-size: 0.82rem; color: #fff; line-height: 1.4; padding-left: 20px; letter-spacing: -0.05em; word-spacing: -0.15em; text-align: justify; }
+        /* 하단 설명: 가독성 중심 자간/행간 */
+        .hazard-desc { font-size: 0.88rem; color: #fff; line-height: 1.6; padding-left: 20px; letter-spacing: -0.01em; }
         
         .footer-copyright { padding: 16px 24px 24px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(var(--main-rgb), 0.5); text-transform: uppercase; }
     </style>
