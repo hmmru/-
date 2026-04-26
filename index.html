@@ -31,8 +31,6 @@
         .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; transition: 0.2s; }
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-copy { background: #444; color: #fff; border: 1px solid #555; }
-        .btn-toggle { background: #333; color: var(--main-color); border: 1px solid var(--main-color); margin-top: 5px; font-size: 10px; }
-        .btn-toggle.active { background: var(--main-color); color: #fff; box-shadow: 0 0 10px var(--main-color); }
 
         :root {
             --bg-opacity: 0.7; 
@@ -56,12 +54,10 @@
 
         .bg-layer {
             position: absolute;
-            top: -10%; left: -10%; width: 120%; height: 120%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-image: var(--bg-image);
             background-size: cover; background-position: center;
             z-index: 0;
-            transition: transform 0.1s ease-out;
-            will-change: transform;
         }
 
         .bg-layer::before {
@@ -139,74 +135,72 @@
     
     <div class="edit-group">
         <label>SYSTEM SETTING</label>
-        <div class="row"><span>Opacity</span><input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7"></div>
-        <div class="row"><span>Text Color</span><input type="color" id="c-text" value="#111111"></div>
-        <div class="row" style="margin-top:10px;"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..."></div>
-        <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*"></div>
-        <label style="margin-top:15px;">3D INTERFACE</label>
-        <button id="tilt-toggle-btn" class="btn btn-toggle">3D BG MOTION: OFF</button>
+        <div class="row"><span>Opacity</span><input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7" oninput="up()"></div>
+        <div class="row"><span>Text Color</span><input type="color" id="c-text" value="#111111" oninput="up()"></div>
+        <div class="row" style="margin-top:10px;"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..." oninput="changeBgUrl(this.value)"></div>
+        <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*" onchange="changeBgFile(this)"></div>
     </div>
     
     <div class="edit-group">
         <label>HEADER IDENTITY</label>
-        <input type="text" id="in-tag" value="Fearless•HQ">
-        <input type="text" id="in-grade" value="S+ CLASS SENTINEL">
-        <input type="text" id="in-name" value="CODE NAME: LOVE">
+        <input type="text" id="in-tag" value="Fearless•HQ" oninput="up()">
+        <input type="text" id="in-grade" value="S+ CLASS SENTINEL" oninput="up()">
+        <input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()">
     </div>
 
     <div class="edit-group">
         <label>SYSTEM QUOTE</label>
-        <input type="text" id="in-catch" value="// 사랑을 위한, 사랑에 의한, 사랑과 염한">
-        <textarea id="in-quote">"어쩌고"</textarea>
+        <input type="text" id="in-catch" value="// 사랑을 위한, 사랑에 의한, 사랑과 염한" oninput="up()">
+        <textarea id="in-quote" oninput="up()">"어쩌고"</textarea>
     </div>
 
     <div class="edit-group">
         <label>DATA SECTION 1 (BASIC)</label>
-        <input type="text" id="l-1" value="BASIC_INFO">
-        <input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬">
+        <input type="text" id="l-1" value="BASIC_INFO" oninput="up()">
+        <input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬" oninput="up()">
     </div>
 
     <div class="edit-group">
         <label>DATA SECTION 2 (APPEARANCE)</label>
-        <input type="text" id="l-2" value="APPEARANCE">
-        <textarea id="v-2">키 181cm. 마른 편이지만 탄탄하고 유연한 몸...</textarea>
+        <input type="text" id="l-2" value="APPEARANCE" oninput="up()">
+        <textarea id="v-2" oninput="up()">키 181cm. 마른 편이지만 탄탄하고 유연한 몸...</textarea>
     </div>
 
     <div class="edit-group">
         <label>DATA SECTION 3 (PERSONALITY)</label>
-        <input type="text" id="l-3" value="PERSONALITY">
-        <textarea id="v-3">태생적으로 사랑받는 것이 숨 쉬는 것만큼 당연했기에...</textarea>
+        <input type="text" id="l-3" value="PERSONALITY" oninput="up()">
+        <textarea id="v-3" oninput="up()">태생적으로 사랑받는 것이 숨 쉬는 것만큼 당연했기에...</textarea>
     </div>
 
     <div class="edit-group">
         <label>DATA SECTION 4 (TRAITS)</label>
-        <input type="text" id="l-4" value="CHARACTER_TRAITS">
-        <textarea id="v-4">혼자 있는 것을 극도로 견디지 못함...</textarea>
+        <input type="text" id="l-4" value="CHARACTER_TRAITS" oninput="up()">
+        <textarea id="v-4" oninput="up()">혼자 있는 것을 극도로 견디지 못함...</textarea>
     </div>
 
     <div class="edit-group">
         <label>ABILITY SPEC</label>
-        <input type="text" id="l-5" value="ABILITY_SPEC">
-        <input type="text" id="v-5-t" value="[ Heart Manifestation ]">
-        <textarea id="v-5-b">전투시작 시, 손끝에서 형성되는 핑크빛 하트 에너지체...</textarea>
-        <input type="text" id="in-power-label" value="POWER_DATA">
+        <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()">
+        <input type="text" id="v-5-t" value="[ Heart Manifestation ]" oninput="up()">
+        <textarea id="v-5-b" oninput="up()">전투시작 시, 손끝에서 형성되는 핑크빛 하트 에너지체...</textarea>
+        <input type="text" id="in-power-label" value="POWER_DATA" oninput="up()">
     </div>
 
     <div class="edit-group">
         <label>FOOTER STATUS</label>
         <div class="row">
-            <input type="text" id="f-l" value="STATUS: STABLE_ACTIVE">
-            <input type="text" id="f-r" value="ENCRYPTION: ACTIVE">
+            <input type="text" id="f-l" value="STATUS: STABLE_ACTIVE" oninput="up()">
+            <input type="text" id="f-r" value="ENCRYPTION: ACTIVE" oninput="up()">
         </div>
     </div>
 
-    <button id="btn-save-png" class="btn btn-save">SAVE PNG</button>
-    <button id="btn-copy-html" class="btn btn-copy">COPY HTML</button>
+    <button class="btn btn-save" onclick="saveImage()">SAVE PNG</button>
+    <button class="btn btn-copy" onclick="copyHTML()">COPY HTML</button>
 </div>
 
-<div class="preview-side" id="tilt-container">
+<div class="preview-side">
     <div class="card" id="capture-area">
-        <div class="bg-layer" id="bg-motion-layer"></div>
+        <div class="bg-layer"></div>
         <div class="overlay">
             <header>
                 <div class="sys-log"><span id="out-tag">Fearless•HQ</span><div class="sys-load-bar"></div></div>
@@ -242,13 +236,6 @@
 </div>
 
 <script>
-    // [중요] 변수 선언 및 초기화
-    let isTiltEnabled = false;
-    const bgLayer = document.getElementById('bg-motion-layer');
-    const container = document.getElementById('tilt-container');
-    const tiltBtn = document.getElementById('tilt-toggle-btn');
-
-    // [중요] 동기화 함수
     function up() {
         const root = document.documentElement;
         root.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
@@ -266,85 +253,49 @@
         ];
 
         ids.forEach(pair => {
-            const outEl = document.getElementById(pair[1]);
-            const inEl = document.getElementById(pair[0]);
-            if(outEl && inEl) outEl.innerText = inEl.value;
+            document.getElementById(pair[1]).innerText = document.getElementById(pair[0]).value;
         });
 
         document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
     }
 
-    // [중요] 티스토리 보안 우회형 이벤트 연결
-    document.addEventListener('DOMContentLoaded', () => {
-        // 모든 인풋 실시간 반영
-        document.querySelectorAll('input, textarea').forEach(el => {
-            el.addEventListener('input', up);
-        });
+    function changeBgUrl(url) {
+        if(url.trim() !== "") {
+            document.documentElement.style.setProperty('--bg-image', `url('${url}')`);
+        }
+    }
 
-        // 3D 모션 토글 버튼 (onclick 대신 addEventListener 사용)
-        tiltBtn.addEventListener('click', () => {
-            isTiltEnabled = !isTiltEnabled;
-            if (isTiltEnabled) {
-                tiltBtn.innerText = "3D BG MOTION: ON";
-                tiltBtn.classList.add('active');
-                bgLayer.style.transform = "scale(1.1)";
-            } else {
-                tiltBtn.innerText = "3D BG MOTION: OFF";
-                tiltBtn.classList.remove('active');
-                bgLayer.style.transform = "translate(0, 0) scale(1.0)";
-            }
-        });
+    function changeBgFile(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.documentElement.style.setProperty('--bg-image', `url('${e.target.result}')`);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
-        // 마우스 움직임 감지
-        container.addEventListener('mousemove', (e) => {
-            if (!isTiltEnabled) return;
-            const rect = container.getBoundingClientRect();
-            const moveX = (e.clientX - rect.left - rect.width / 2) / 18;
-            const moveY = (e.clientY - rect.top - rect.height / 2) / 18;
-            bgLayer.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
+    function saveImage() {
+        html2canvas(document.getElementById('capture-area'), { 
+            backgroundColor: null, 
+            useCORS: true, 
+            scale: 2,
+            width: 440,
+            height: 850
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'sentinel-card.png';
+            link.href = canvas.toDataURL();
+            link.click();
         });
+    }
 
-        container.addEventListener('mouseleave', () => {
-            if (isTiltEnabled) bgLayer.style.transform = "translate(0, 0) scale(1.1)";
-        });
-
-        // 이미지 로직
-        document.getElementById('in-bg-file').addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => document.documentElement.style.setProperty('--bg-image', `url('${e.target.result}')`);
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-
-        document.getElementById('in-bg-url').addEventListener('input', function() {
-            if(this.value.trim() !== "") document.documentElement.style.setProperty('--bg-image', `url('${this.value}')`);
-        });
-
-        // 기타 버튼
-        document.getElementById('btn-save-png').addEventListener('click', () => {
-            const prev = bgLayer.style.transform;
-            bgLayer.style.transform = "translate(0, 0) scale(1.0)";
-            html2canvas(document.getElementById('capture-area'), { 
-                backgroundColor: null, useCORS: true, scale: 2, width: 440, height: 850
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'sentinel-card.png';
-                link.href = canvas.toDataURL();
-                link.click();
-                if(isTiltEnabled) bgLayer.style.transform = prev;
-            });
-        });
-
-        document.getElementById('btn-copy-html').addEventListener('click', () => {
-            const cardHTML = document.getElementById('capture-area').outerHTML;
-            const styleTags = document.querySelector('style').innerHTML;
-            const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
-            navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
-        });
-
-        up();
-    });
+    function copyHTML() {
+        const cardHTML = document.getElementById('capture-area').outerHTML;
+        const styleTags = document.querySelector('style').innerHTML;
+        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
+        navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
+    }
 </script>
 
 </body>
