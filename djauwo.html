@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD MASTER EDITOR (OPTIMIZED)</title>
+    <title>HUD MASTER EDITOR (ULTRA HQ)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap">
@@ -71,6 +71,7 @@
             filter: brightness(0.9) contrast(1.1); 
             border: none;
             image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
         
         .rank-overlay { 
@@ -105,7 +106,7 @@
         <input type="color" id="c-master" value="#ff4d8d" oninput="up()">
     </div>
     <div class="edit-group">
-        <label>IMAGE URL / FILE (AUTO-RESIZE)</label>
+        <label>IMAGE URL / FILE (HQ VECTOR RENDER)</label>
         <input type="text" id="i-url" placeholder="URL..." oninput="up()">
         <input type="file" id="f-input" accept="image/*" onchange="upImg(this)" style="margin-top:5px">
     </div>
@@ -139,7 +140,7 @@
         <textarea id="t-hd" oninput="up()" style="margin-top:5px">폭주 기록: ?회 / 애정 결핍 시 발생. 주변의 영혼을 말려 죽이는 ‘대규모 정서 초토화’ 발생 가능성이 지극히 높음.</textarea>
         <input type="text" id="t-foot" value="© GMB NET. HUD_UI_LEVEL_7. ALL RIGHTS RESERVED." oninput="up()" style="margin-top:5px">
     </div>
-    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (RATIO KEPT)</button>
+    <button class="btn-extract" onclick="downloadClean()">EXTRACT PNG (MAX QUALITY)</button>
     <button class="btn-copy" onclick="copy()">COPY HUD CODE</button>
 </div>
 
@@ -178,7 +179,6 @@
 <script>
     let currentImageData = "";
 
-    // 이미지 최적화 리사이징 로직 추가
     function upImg(input) { 
         if(input.files && input.files[0]) { 
             const r = new FileReader(); 
@@ -186,22 +186,26 @@
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1000; // 고화질 유지하며 용량만 줄이는 최적 폭
+                    // 벡터급 선명도 유지를 위해 폭 1200px (480px의 약 2.5배)로 렌더링
+                    const TARGET_WIDTH = 1200; 
                     let width = img.width;
                     let height = img.height;
 
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
+                    if (width > TARGET_WIDTH) {
+                        height *= TARGET_WIDTH / width;
+                        width = TARGET_WIDTH;
                     }
 
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
+                    // 화질 최우선 옵션
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // 최적화된 데이터 저장 (용량이 확 줄어듬)
-                    currentImageData = canvas.toDataURL('image/png', 0.8);
+                    // 화질 손실 거의 없는 PNG 데이터 생성
+                    currentImageData = canvas.toDataURL('image/png', 1.0);
                     document.getElementById('o-img').src = currentImageData;
                 };
                 img.src = e.target.result;
@@ -254,14 +258,13 @@
         hud.style.width = '480px';
 
         html2canvas(hud, {
-            scale: 3,
+            scale: 4, 
             useCORS: true,
             backgroundColor: null,
-            removeContainer: true,
             logging: false,
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'hud_output.png';
+            link.download = 'hud_hq_render.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
             hud.style.width = originalWidth;
@@ -276,7 +279,21 @@
         const style = document.querySelector('style').innerHTML;
         const cleanCode = `<div><style>${style}<\/style><div style="display:flex; justify-content:center; width:100%; overflow:hidden; background:#000; padding:20px 0;">${hudClone.outerHTML}</div><\/div>`;
         
-        navigator.clipboard.writeText(cleanCode).then(()=>alert('최적화된 이미지 포함 코드 복사 완료! 이제 잘 붙여넣어질 거야.'));
+        // 브라우저 복사 안정성 보강
+        const blob = new Blob([cleanCode], {type: 'text/plain'});
+        const item = new ClipboardItem({'text/plain': blob});
+        navigator.clipboard.write([item]).then(() => {
+            alert('고화질 이미지 포함 코드 복사 완료!');
+        }).catch(err => {
+            // 구형 브라우저 대응용 폴백
+            const t = document.createElement("textarea");
+            document.body.appendChild(t);
+            t.value = cleanCode;
+            t.select();
+            document.execCommand('copy');
+            document.body.removeChild(t);
+            alert('코드 복사 완료! (폴백 방식)');
+        });
     }
     up();
 </script>
