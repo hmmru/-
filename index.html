@@ -11,7 +11,6 @@
         /* 편집기 전용 UI */
         body { background: #1a1a1a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
         
-        /* 모바일 대응 레이아웃 수정 */
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; height: auto; }
             .editor-side { width: 100% !important; border-right: none !important; border-bottom: 1px solid #333; }
@@ -25,30 +24,29 @@
         .edit-group label { display: block; font-size: 11px; color: var(--main-color, #ff6b81); margin-bottom: 8px; font-family: 'Orbitron'; letter-spacing: 1px; }
         .edit-group input, .edit-group textarea { width: 100%; background: #333; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box; font-size: 13px; margin-bottom: 5px; }
         .edit-group textarea { height: 80px; resize: none; font-family: 'Noto Sans KR'; }
-        .row { display: flex; gap: 5px; }
-        .row input { flex: 1; }
+        .row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
+        .row span { font-size: 11px; color: #aaa; flex-shrink: 0; width: 80px; }
+        .row input { flex: 1; margin-bottom: 0; }
 
         .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; transition: 0.2s; }
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-copy { background: #444; color: #fff; border: 1px solid #555; }
 
-        /* [카드 원본 디자인 - 반응형 최적화] */
+        /* [카드 원본 디자인] */
         :root {
             --bg-opacity: 0.7; 
             --main-color: #ff6b81;
             --sub-color: #ffb7c5;
             --main-rgb: 255, 107, 129;
+            --text-color: #111111; /* 본문 글씨색 변수 추가 */
         }
 
         .card {
-            /* 모바일에서 잘리지 않도록 너비를 유동적으로 변경 */
             width: 100%; 
             max-width: 440px; 
-            /* 가로 세로 비율 유지 */
             aspect-ratio: 440 / 850;
             height: auto;
             margin: 0 auto;
-            
             background-image: url('https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FROJ4l%2FdJMcahqFXch%2FAAAAAAAAAAAAAAAAAAAAAAdaYEl4L8uhdG797Zy6lZ5U65Jz6l_xA9JKpxVVcjX6%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3Do3rlTvBn4M9R8gH%252FPx7KDCEZFZs%253D');
             background-size: cover; background-position: center; border: 1px solid var(--main-color);
             position: relative; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; flex-shrink: 0;
@@ -99,7 +97,8 @@
         .label::before { content: '◢'; font-size: 7px; margin-right: -5px; }
         .label::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--main-color), transparent); }
 
-        .value { font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; font-size: 0.92rem; color: #111; line-height: 1.65; letter-spacing: -0.02em; padding-left: 8px; word-break: keep-all; text-align: justify; }
+        /* 본문 글씨색에 변수 적용 */
+        .value { font-family: 'JetBrains Mono', 'Noto Sans KR', sans-serif; font-size: 0.92rem; color: var(--text-color); line-height: 1.65; letter-spacing: -0.02em; padding-left: 8px; word-break: keep-all; text-align: justify; }
 
         .ability-box { background: rgba(255, 107, 129, 0.08); border: 1px solid var(--sub-color); padding: 18px; margin-top: 8px; position: relative; }
         .ability-box::after { content: 'POWER_DATA'; position: absolute; bottom: -7px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--main-color); color: #fff; padding: 0 4px; }
@@ -118,7 +117,8 @@
     
     <div class="edit-group">
         <label>SYSTEM SETTING</label>
-        <div class="row"><span style="font-size:12px; color:#aaa;">Opacity</span><input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7" oninput="up()"></div>
+        <div class="row"><span>Opacity</span><input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7" oninput="up()"></div>
+        <div class="row"><span>Text Color</span><input type="color" id="c-text" value="#111111" oninput="up()"></div>
     </div>
     
     <div class="edit-group">
@@ -216,7 +216,10 @@
 <script>
     function up() {
         const root = document.documentElement;
+        // 오파시티 업데이트
         root.style.setProperty('--bg-opacity', document.getElementById('c-opacity').value);
+        // 본문 글씨 색상 업데이트
+        root.style.setProperty('--text-color', document.getElementById('c-text').value);
 
         const ids = [
             ['in-tag', 'out-tag'], ['in-grade', 'out-grade'], ['in-name', 'out-name'],
@@ -235,7 +238,6 @@
     }
 
     function saveImage() {
-        // 모바일 캡처 시 레이아웃 깨짐 방지를 위해 scale 조절
         html2canvas(document.getElementById('capture-area'), { 
             backgroundColor: null, 
             useCORS: true, 
@@ -253,10 +255,12 @@
     function copyHTML() {
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleTags = document.querySelector('style').innerHTML;
-        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; background:#000; padding:20px 0;">${cardHTML}</div>`;
+        // 복사 시 주변 검은 여백을 없애고 카드 본체만 중앙에 위치하도록 수정
+        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center;">${cardHTML}</div>`;
         navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
     }
 </script>
 
 </body>
 </html>
+
