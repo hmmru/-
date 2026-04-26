@@ -8,7 +8,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;500;700&display=swap');
 
-        /* 편집기 전용 UI */
         body { background: #1a1a1a; margin: 0; display: flex; height: 100vh; font-family: 'Noto Sans KR', sans-serif; color: #fff; overflow: hidden; }
         
         @media (max-width: 900px) {
@@ -18,7 +17,7 @@
         }
 
         .editor-side { width: 420px; background: #222; padding: 20px; overflow-y: auto; border-right: 1px solid #333; z-index: 100; flex-shrink: 0; box-sizing: border-box; }
-        .preview-side { flex: 1; display: flex; justify-content: center; align-items: center; background: #000; overflow: auto; padding: 20px; perspective: 1200px; }
+        .preview-side { flex: 1; display: flex; justify-content: center; align-items: center; background: #000; overflow: auto; padding: 20px; }
         
         .edit-group { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
         .edit-group label { display: block; font-size: 11px; color: var(--main-color, #ff6b81); margin-bottom: 8px; font-family: 'Orbitron'; letter-spacing: 1px; }
@@ -31,12 +30,9 @@
         .btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900; transition: 0.2s; }
         .btn-save { background: var(--main-color, #ff6b81); color: #fff; }
         .btn-copy { background: #444; color: #fff; border: 1px solid #555; }
-        
-        /* 3D 토글 버튼 스타일 보강 */
-        .btn-toggle { background: transparent; color: var(--main-color); border: 2px solid var(--main-color); font-size: 12px; margin-bottom: 10px; }
-        .btn-toggle.active { background: var(--main-color); color: #fff; box-shadow: 0 0 15px rgba(255, 107, 129, 0.4); }
+        .btn-toggle { background: #333; color: var(--main-color); border: 1px solid var(--main-color); margin-top: 5px; font-size: 10px; }
+        .btn-toggle.active { background: var(--main-color); color: #fff; }
 
-        /* [카드 원본 디자인] */
         :root {
             --bg-opacity: 0.7; 
             --main-color: #ff6b81;
@@ -52,18 +48,27 @@
             aspect-ratio: 440 / 850;
             height: auto;
             margin: 0 auto;
-            background-image: var(--bg-image);
-            background-size: cover; background-position: center; border: 1px solid var(--main-color);
+            border: 1px solid var(--main-color);
             position: relative; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; flex-shrink: 0;
-            transition: transform 0.1s ease-out;
-            transform-style: preserve-3d;
+            background: #000; /* 배경 레이어 베이스 */
         }
 
-        .card::before {
+        /* 배경 이미지만 따로 담는 레이어 (이것만 흔들림) */
+        .bg-layer {
+            position: absolute;
+            top: -10%; left: -10%; width: 120%; height: 120%; /* 여유 공간 확보 */
+            background-image: var(--bg-image);
+            background-size: cover; background-position: center;
+            z-index: 0;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .bg-layer::before {
             content: ''; position: absolute; inset: 0;
             background-image: linear-gradient(rgba(255, 107, 129, 0.05) 1px, transparent 1px),
                               linear-gradient(90deg, rgba(255, 107, 129, 0.05) 1px, transparent 1px);
-            background-size: 20px 20px; z-index: 0;
+            background-size: 20px 20px;
         }
 
         .overlay {
@@ -97,7 +102,6 @@
         .quote-card-unit::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
         
         .card-catch { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--main-color); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 1px; opacity: 0.7; }
-        
         .card-quote { font-size: 0.88rem; color: var(--main-color); font-weight: 700; line-height: 1.35; letter-spacing: -0.05em; word-spacing: -0.1em; word-break: keep-all; margin: 0; }
 
         .data-row { margin-bottom: 20px; }
@@ -132,25 +136,21 @@
 <div class="editor-side">
     <h2 style="font-family: 'Orbitron'; color: var(--main-color); margin-bottom: 20px; font-size: 1.2rem;">STATION CONTROL</h2>
     
-    <div class="edit-group" style="background: rgba(255,107,129,0.1); padding: 15px; border-radius: 8px; border: 1px solid var(--main-color);">
-        <label>3D INTERFACE CONTROL</label>
-        <button id="tilt-toggle" class="btn btn-toggle" onclick="toggleTilt()">MOTION SENSOR: OFF</button>
-        <p style="font-size: 10px; color: #888; margin: 0;">* 마우스나 기기 기울기에 따라 반응합니다.</p>
-    </div>
-
     <div class="edit-group">
         <label>SYSTEM SETTING</label>
         <div class="row"><span>Opacity</span><input type="range" id="c-opacity" min="0" max="1" step="0.05" value="0.7" oninput="up()"></div>
         <div class="row"><span>Text Color</span><input type="color" id="c-text" value="#111111" oninput="up()"></div>
         <div class="row" style="margin-top:10px;"><span>BG URL</span><input type="text" id="in-bg-url" placeholder="https://..." oninput="changeBgUrl(this.value)"></div>
         <div class="row"><span>BG FILE</span><input type="file" id="in-bg-file" accept="image/*" onchange="changeBgFile(this)"></div>
+        <label style="margin-top:15px;">3D INTERFACE</label>
+        <button id="tilt-toggle" class="btn btn-toggle" onclick="toggleTilt()">3D BG MOTION: OFF</button>
     </div>
     
     <div class="edit-group">
         <label>HEADER IDENTITY</label>
-        <input type="text" id="in-tag" value="Fearless•HQ" oninput="up()">
-        <input type="text" id="in-grade" value="S+ CLASS SENTINEL" oninput="up()">
-        <input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()">
+        <input type="text" id="in-tag" value="Fearless•HQ" oninput="up()" placeholder="HQ Tag">
+        <input type="text" id="in-grade" value="S+ CLASS SENTINEL" oninput="up()" placeholder="Class Grade">
+        <input type="text" id="in-name" value="CODE NAME: LOVE" oninput="up()" placeholder="Code Name">
     </div>
 
     <div class="edit-group">
@@ -160,25 +160,25 @@
     </div>
 
     <div class="edit-group">
-        <label>DATA SECTION 1</label>
+        <label>DATA SECTION 1 (BASIC)</label>
         <input type="text" id="l-1" value="BASIC_INFO" oninput="up()">
         <input type="text" id="v-1" value="연하진 / 26세 / 남성 / 센티넬" oninput="up()">
     </div>
 
     <div class="edit-group">
-        <label>DATA SECTION 2</label>
+        <label>DATA SECTION 2 (APPEARANCE)</label>
         <input type="text" id="l-2" value="APPEARANCE" oninput="up()">
         <textarea id="v-2" oninput="up()">키 181cm. 마른 편이지만 탄탄하고 유연한 몸...</textarea>
     </div>
 
     <div class="edit-group">
-        <label>DATA SECTION 3</label>
+        <label>DATA SECTION 3 (PERSONALITY)</label>
         <input type="text" id="l-3" value="PERSONALITY" oninput="up()">
         <textarea id="v-3" oninput="up()">태생적으로 사랑받는 것이 숨 쉬는 것만큼 당연했기에...</textarea>
     </div>
 
     <div class="edit-group">
-        <label>DATA SECTION 4</label>
+        <label>DATA SECTION 4 (TRAITS)</label>
         <input type="text" id="l-4" value="CHARACTER_TRAITS" oninput="up()">
         <textarea id="v-4" oninput="up()">혼자 있는 것을 극도로 견디지 못함...</textarea>
     </div>
@@ -188,7 +188,7 @@
         <input type="text" id="l-5" value="ABILITY_SPEC" oninput="up()">
         <input type="text" id="v-5-t" value="[ Heart Manifestation ]" oninput="up()">
         <textarea id="v-5-b" oninput="up()">전투시작 시, 손끝에서 형성되는 핑크빛 하트 에너지체...</textarea>
-        <input type="text" id="in-power-label" value="POWER_DATA" oninput="up()">
+        <input type="text" id="in-power-label" value="POWER_DATA" oninput="up()" placeholder="Bottom Label (ex: POWER_DATA)">
     </div>
 
     <div class="edit-group">
@@ -205,6 +205,7 @@
 
 <div class="preview-side" id="tilt-container">
     <div class="card" id="capture-area">
+        <div class="bg-layer" id="bg-motion-layer"></div>
         <div class="overlay">
             <header>
                 <div class="sys-log"><span id="out-tag">Fearless•HQ</span><div class="sys-load-bar"></div></div>
@@ -241,7 +242,7 @@
 
 <script>
     let isTiltEnabled = false;
-    const card = document.getElementById('capture-area');
+    const bgLayer = document.getElementById('bg-motion-layer');
 
     function up() {
         const root = document.documentElement;
@@ -266,44 +267,50 @@
         document.getElementById('out-ability-box').setAttribute('data-label', document.getElementById('in-power-label').value);
     }
 
+    // 배경만 움직이는 틸트 기능
     function handleMove(e) {
         if (!isTiltEnabled) return;
         const container = document.getElementById('tilt-container');
         const rect = container.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const rotateX = (centerY - y) / 12;
-        const rotateY = (x - centerX) / 12;
-        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        
+        // 배경을 반대 방향으로 아주 살짝 밀어줌
+        const moveX = (x - centerX) / 20;
+        const moveY = (y - centerY) / 20;
+        
+        bgLayer.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
     }
 
     function handleLeave() {
         if (!isTiltEnabled) return;
-        card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        bgLayer.style.transform = `translate(0, 0) scale(1.1)`;
     }
 
     function handleGyro(e) {
         if (!isTiltEnabled || !e.beta) return;
-        const rX = (e.beta - 45) / 1.5; 
-        const rY = e.gamma / 1.5;
-        card.style.transform = `rotateX(${rX}deg) rotateY(${rY}deg)`;
+        const moveX = e.gamma / 1.5;
+        const moveY = (e.beta - 45) / 1.5;
+        bgLayer.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
     }
 
     function toggleTilt() {
         isTiltEnabled = !isTiltEnabled;
         const btn = document.getElementById('tilt-toggle');
         if (isTiltEnabled) {
-            btn.innerText = "MOTION SENSOR: ON";
+            btn.innerText = "3D BG MOTION: ON";
             btn.classList.add('active');
+            bgLayer.style.transform = "scale(1.1)";
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission();
             }
         } else {
-            btn.innerText = "MOTION SENSOR: OFF";
+            btn.innerText = "3D BG MOTION: OFF";
             btn.classList.remove('active');
-            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            bgLayer.style.transform = "translate(0, 0) scale(1.0)";
         }
     }
 
@@ -328,8 +335,10 @@
     }
 
     function saveImage() {
-        const prevTransform = card.style.transform;
-        card.style.transform = "none";
+        // 저장 시 배경 위치 초기화
+        const prevTransform = bgLayer.style.transform;
+        bgLayer.style.transform = "translate(0, 0) scale(1.0)";
+        
         html2canvas(document.getElementById('capture-area'), { 
             backgroundColor: null, 
             useCORS: true, 
@@ -341,17 +350,18 @@
             link.download = 'sentinel-card.png';
             link.href = canvas.toDataURL();
             link.click();
-            if(isTiltEnabled) card.style.transform = prevTransform;
+            if(isTiltEnabled) bgLayer.style.transform = prevTransform;
         });
     }
 
     function copyHTML() {
         const cardHTML = document.getElementById('capture-area').outerHTML;
         const styleTags = document.querySelector('style').innerHTML;
-        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; perspective:1200px;">${cardHTML}</div>`;
+        const fullCode = `<style>${styleTags}</style>\n<div style="display:flex; justify-content:center; overflow:hidden;">${cardHTML}</div>`;
         navigator.clipboard.writeText(fullCode).then(() => alert("전체 코드가 복사되었습니다."));
     }
 </script>
 
 </body>
 </html>
+
